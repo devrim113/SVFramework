@@ -1,5 +1,3 @@
-import ffmpeg
-
 # Simulating Camera Lag
 # Introduce Delays in the camera's capture and output process to simulate lag.
 
