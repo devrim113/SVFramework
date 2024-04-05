@@ -1,17 +1,27 @@
-import subprocess
-import os
+import gi
+gi.require_version('Gst', '1.0')
+gi.require_version('GstRtspServer', '1.0')
+from gi.repository import Gst, GstRtspServer, GLib
 
-def start_gstreamer_rtsp_server(video_path):
-    # Define the GStreamer pipeline with looping
-    pipeline = (
-        f"multifilesrc location={video_path} loop=true ! "  # Set loop=true for looping
-        f"qtdemux ! h264parse ! rtph264pay name=pay0 pt=96 config-interval=1 ! "
-        f"gdppay ! tcpserversink host=localhost port=8554"
-    )
+# Initialize GStreamer
+Gst.init(None)
 
-    # Run the GStreamer command
-    subprocess.Popen(["gst-launch-1.0", "-v"] + pipeline.split())
+# Create an RTSP server
+server = GstRtspServer.RTSPServer.new()
+server.set_service("8554")  # Set the port you want to listen on
 
-# Example usage
-video_path = os.path.join(os.path.dirname(__file__), "input.mp4")
-start_gstreamer_rtsp_server(video_path)
+# Create a default media factory that will create a pipeline for a URI.
+factory = GstRtspServer.RTSPMediaFactory.new()
+factory.set_launch("( filesrc location=./input.mp4 ! qtdemux ! queue ! h264parse ! rtph264pay name=pay0 pt=96 )")
+factory.set_shared(True)  # Share the pipeline between all clients
+
+# Attach the test factory to the /test endpoint
+mounts = server.get_mount_points()
+mounts.add_factory("/", factory)
+
+# Start the server
+server.attach(None)
+
+# Run the GMainLoop to handle clients
+loop = GLib.MainLoop.new(None, False)
+loop.run()
