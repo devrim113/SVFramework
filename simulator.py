@@ -129,12 +129,12 @@ if __name__ == "__main__":
         # Check if the simulation type is valid
         if simulation_type not in simulation_types:
             print("Invalid simulation type. Please specify a valid simulation.")
-            print("Usage: python simulator.py <video_folder> <simulation_type>")
+            print("Usage: python3 simulator.py <video_folder> <simulation_type>")
             print("Available simulations: " + ", ".join(simulation_types))
             sys.exit(1)
     else:
         print("Please specify a simulation and a video folder to run.")
-        print("Usage: python simulator.py <video_folder> <simulation_type>")
+        print("Usage: python3 simulator.py <video_folder> <simulation_type>")
         print("Available simulations: " + ", ".join(simulation_types))
         sys.exit(1)
 
