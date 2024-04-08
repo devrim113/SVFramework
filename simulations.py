@@ -1,5 +1,4 @@
 def normal(video_file):
-    print("Running normal simulation...")
     return f"( filesrc location=./{video_file} ! decodebin ! x264enc ! rtph264pay name=pay0 pt=96 )"
 
 
@@ -15,7 +14,6 @@ def normal(video_file):
 
 
 def low_bitrate(video_file):
-    print("Simulating low bitrate...")
     return f"( filesrc location=./{video_file} ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
 
 
