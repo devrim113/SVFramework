@@ -72,6 +72,14 @@ if __name__ == "__main__":
     # Get the simulation type from the command line arguments
     if len(sys.argv) > 2:
         video_file = sys.argv[1]
+        # Check if the video_file exists and is accessible
+        try:
+            open(video_file)
+        except FileNotFoundError:
+            print("The video file does not exist or is inaccessible.")
+            print("Usage: python simulator.py <video_file> <simulation_type>")
+            sys.exit(1)
+
         simulation_type = sys.argv[2]
         if simulation_type not in simulation_types:
             print("Invalid simulation type. Please specify a valid simulation.")
