@@ -22,7 +22,7 @@ if ps -p $PID > /dev/null; then
     for video in "$1"/*; do
     (
         video="${video#videos/}"
-        echo "Checking video: $video\n"
+        echo "Checking video: $video"
         python3 validator.py rtsp://localhost:8554/"$video"
     )
     done
