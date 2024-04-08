@@ -25,10 +25,10 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        xargs sudo apt-get install -y < apt-get-requirements.txt
+        # xargs sudo apt-get install -y < apt-get-requirements.txt
         python -m pip install --upgrade pip
-        pip install flake8
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install flake8 black
+        # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
