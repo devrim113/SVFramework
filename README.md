@@ -13,7 +13,16 @@ To setup the parts clone this project and run the following commands:
 `pip install -r requirements.txt`
 
 ## Usage
-The program can be run using the run-scripts, which each are documented seperately.
+The program can be run using the run-scripts. There are two main scripts to use:
+
+`bash run-scripts/validation.sh <video_folder> <simulation>`
+
+This fires up the simulator with the video folder and the simulation and immediatly calls the validator with the correct url's. All the output is returned to the user.
+
+`bash run-scripts/watch.sh [-v] <video_folder> <simulation>`
+
+Fires up the simulator with the video folder and the simulation and starts a ffplay watch window for each stream. The optional -v verbose flag gives the output of ffplay to the user.
+
 The main usage is as follows:
 
 For the simulator:
