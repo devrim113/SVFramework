@@ -1,4 +1,5 @@
 #!/bin/bash
+# Start ffplay for each video in the videos directory
 
 for video in videos/*; do
     (

@@ -95,6 +95,7 @@ if __name__ == "__main__":
     # Get the simulation type from the command line arguments
     if len(sys.argv) > 2:
         video_folder = sys.argv[1]
+
         # Check if the video_folder exists, else throw an error.
         if not os.path.exists(video_folder):
             print(f"The video folder '{video_folder}' does not exist.")
@@ -107,6 +108,8 @@ if __name__ == "__main__":
             if os.path.isfile(os.path.join(video_folder, video))
             and video.lower().endswith((".mp4", ".avi", ".mkv"))
         ]
+
+        # Check if the video folder contains any video files
         if not videos:
             print(
                 f"The video folder '{video_folder}' does not contain any video files."
@@ -122,6 +125,8 @@ if __name__ == "__main__":
                 sys.exit(1)
 
         simulation_type = sys.argv[2]
+
+        # Check if the simulation type is valid
         if simulation_type not in simulation_types:
             print("Invalid simulation type. Please specify a valid simulation.")
             print("Usage: python simulator.py <video_folder> <simulation_type>")
