@@ -3,6 +3,8 @@
 ## Description
 This is a Simulation and Validation framework for RTSP streams. The goal of the project is to simulate RTSP streams most commonly used by IP cameras to transport video. The simulator performs operations on the simulated stream to simulate errors, failures and problems with the stream. The system should keep operating and sometimes even fix these mistakes. The validation part checks the stream and checks if the error, failures and problems are solved or not.
 
+For the project, we use python files that call gstreamer and ffmpeg functionalities.
+
 ## Installation
 To setup the parts clone this project and run the following commands:
 
