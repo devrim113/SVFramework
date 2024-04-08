@@ -23,7 +23,7 @@ This fires up the simulator with the video folder and the simulation and immedia
 
 Fires up the simulator with the video folder and the simulation and starts a ffplay watch window for each stream. The optional -v verbose flag gives the output of ffplay to the user.
 
-The main usage is as follows:
+To run everything individually:
 
 For the simulator:
 
