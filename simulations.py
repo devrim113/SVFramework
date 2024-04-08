@@ -7,6 +7,7 @@
 # Simulating fluctuating internet connectivety
 # Vary the network bandwith and simulate interruptions to replicate poor internet connectivity.
 
+
 def low_bitrate():
     print("Simulating low bitrate...")
     return "( filesrc location=./input.mp4 ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
@@ -131,5 +132,5 @@ def low_bitrate():
 # Validating Field Coverage Completeness
 # Monitor the array cameras' field coverage during the simulation to ensure that they capture the entire field of view without missing any areas.
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("This is a simulation of the main.py file.")

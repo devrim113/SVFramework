@@ -3,8 +3,9 @@ import signal
 import sys
 import simulations
 import gi
-gi.require_version('Gst', '1.0')
-gi.require_version('GstRtspServer', '1.0')
+
+gi.require_version("Gst", "1.0")
+gi.require_version("GstRtspServer", "1.0")
 from gi.repository import Gst, GstRtspServer, GLib
 
 
@@ -17,7 +18,11 @@ def stop_server(sig, frame):
 
 if __name__ == "__main__":
     # Get the available simulation types from the simulation module
-    simulation_types = [func for func in dir(simulations) if callable(getattr(simulations, func)) and not func.startswith("__")]
+    simulation_types = [
+        func
+        for func in dir(simulations)
+        if callable(getattr(simulations, func)) and not func.startswith("__")
+    ]
 
     # Get the simulation type from the command line arguments
     if len(sys.argv) > 1:
