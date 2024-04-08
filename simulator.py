@@ -1,24 +1,30 @@
+from config import STREAMING_PORT, STREAMING_PATH, STREAMING_URL
+import signal
+import sys
+import simulations
 import gi
 gi.require_version('Gst', '1.0')
 gi.require_version('GstRtspServer', '1.0')
 from gi.repository import Gst, GstRtspServer, GLib
-from config import STREAMING_PORT, STREAMING_PATH, STREAMING_URL
-import signal
-import sys
-import simulation
+
 
 def stop_server(sig, frame):
     print("\nStopping RTSP server")
     loop.quit()
-    server = None
     print("Server stopped successfully.")
     sys.exit(0)
 
+
 if __name__ == "__main__":
+    # Get the available simulation types from the simulation module
+    simulation_types = [func for func in dir(simulations) if callable(getattr(simulations, func)) and not func.startswith("__")]
+
+    # Get the simulation type from the command line arguments
     if len(sys.argv) > 1:
         simulation_type = sys.argv[1]
     else:
         print("Please specify a simulation to run.")
+        print("Available simulations: " + ", ".join(simulation_types))
         sys.exit(1)
 
     # Initialize GStreamer
@@ -30,12 +36,16 @@ if __name__ == "__main__":
 
     # Create a default media factory that will create a pipeline for a URI.
     factory = GstRtspServer.RTSPMediaFactory.new()
-    if simulation_type == "low_bitrate":
-        launch_string = simulation.low_bitrate()
+
+    # Perform the operations for the specified simulation type
+    if simulation_type in simulation_types:
+        launch_string = getattr(simulations, simulation_type)()
     else:
-        test = simulation.low_bitrate()
-        print(test)
-        launch_string = "( filesrc location=./input.mp4 ! qtdemux ! queue ! h264parse ! rtph264pay name=pay0 pt=96 )"
+        print("Invalid simulation type. Please specify a valid simulation.")
+        print("Available simulations: " + ", ".join(simulation_types))
+        sys.exit(1)
+
+    # Set the launch string for the media factory
     factory.set_launch(launch_string)
     factory.set_shared(True)  # Share the pipeline between all clients
 

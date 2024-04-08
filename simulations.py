@@ -11,6 +11,7 @@ def low_bitrate():
     print("Simulating low bitrate...")
     return "( filesrc location=./input.mp4 ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
 
+
 # Validating fluctuating internet connectivety
 # Assess the system's ability to buffer and maintain quality video output under these conditions, and recover from temporary disconnections without losing significant data.
 
