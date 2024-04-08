@@ -1,3 +1,9 @@
+#! /usr/bin/env python3
+"""
+This is the simulations module for defining different simulation types for the RTSP server.
+It should not be run, but imported by the simulator script.
+"""
+
 def normal(video_file):
     return f"( filesrc location=./{video_file} ! decodebin ! x264enc ! rtph264pay name=pay0 pt=96 )"
 

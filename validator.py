@@ -1,3 +1,10 @@
+#! /usr/bin/env python3
+"""
+This is the main script for running validations on the simulated RTSP streams.
+The script takes a streaming URL as an argument and validates the stream by checking its accessibility using ffprobe.
+Usage: python validator.py <streaming_url>
+"""
+
 import subprocess
 import sys
 
