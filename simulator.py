@@ -9,29 +9,10 @@ gi.require_version("GstRtspServer", "1.0")
 from gi.repository import Gst, GstRtspServer, GLib
 
 
-def stop_server(sig, frame):
-    print("\nStopping RTSP server")
-    loop.quit()
-    print("Server stopped successfully.")
-    sys.exit(0)
-
-
-if __name__ == "__main__":
-    # Get the available simulation types from the simulation module
-    simulation_types = [
-        func
-        for func in dir(simulations)
-        if callable(getattr(simulations, func)) and not func.startswith("__")
-    ]
-
-    # Get the simulation type from the command line arguments
-    if len(sys.argv) > 1:
-        simulation_type = sys.argv[1]
-    else:
-        print("Please specify a simulation to run.")
-        print("Available simulations: " + ", ".join(simulation_types))
-        sys.exit(1)
-
+def run_simulation(video_file, simulation_type):
+    """
+    Run the specified simulation type as an RTSP server.
+    """
     # Initialize GStreamer
     Gst.init(None)
 
@@ -44,7 +25,7 @@ if __name__ == "__main__":
 
     # Perform the operations for the specified simulation type
     if simulation_type in simulation_types:
-        launch_string = getattr(simulations, simulation_type)()
+        launch_string = getattr(simulations, simulation_type)(video_file)
     else:
         print("Invalid simulation type. Please specify a valid simulation.")
         print("Available simulations: " + ", ".join(simulation_types))
@@ -64,8 +45,43 @@ if __name__ == "__main__":
     # Run the GMainLoop to handle clients
     loop = GLib.MainLoop.new(None, False)
 
+    def handle_sigint(sig, frame):
+        """
+        Stop the RTSP server when a SIGINT signal is received.
+        """
+        print("\nStopping RTSP server")
+        loop.quit()
+        print("Server stopped successfully.")
+        sys.exit(0)
+
     # Handle SIGINT for stopping the server
-    signal.signal(signal.SIGINT, stop_server)
+    signal.signal(signal.SIGINT, handle_sigint)
 
     print("RTSP server is running on " + STREAMING_URL)
     loop.run()
+
+
+if __name__ == "__main__":
+    # Get the available simulation types from the simulation module
+    simulation_types = [
+        func
+        for func in dir(simulations)
+        if callable(getattr(simulations, func)) and not func.startswith("__")
+    ]
+
+    # Get the simulation type from the command line arguments
+    if len(sys.argv) > 2:
+        video_file = sys.argv[1]
+        simulation_type = sys.argv[2]
+        if simulation_type not in simulation_types:
+            print("Invalid simulation type. Please specify a valid simulation.")
+            print("Usage: python simulator.py <video_file> <simulation_type>")
+            print("Available simulations: " + ", ".join(simulation_types))
+            sys.exit(1)
+    else:
+        print("Please specify a simulation and a video to run.")
+        print("Usage: python simulator.py <video_file> <simulation_type>")
+        print("Available simulations: " + ", ".join(simulation_types))
+        sys.exit(1)
+
+    run_simulation(video_file, simulation_type)

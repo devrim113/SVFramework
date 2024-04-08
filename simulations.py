@@ -1,3 +1,8 @@
+def normal(video_file):
+    print("Running normal simulation...")
+    return f"( filesrc location=./{video_file} ! decodebin ! x264enc ! rtph264pay name=pay0 pt=96 )"
+
+
 # Simulating Camera Lag
 # Introduce Delays in the camera's capture and output process to simulate lag.
 
@@ -9,9 +14,9 @@
 # Vary the network bandwith and simulate interruptions to replicate poor internet connectivity.
 
 
-def low_bitrate():
+def low_bitrate(video_file):
     print("Simulating low bitrate...")
-    return "( filesrc location=./input.mp4 ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
+    return f"( filesrc location=./{video_file} ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
 
 
 # Validating fluctuating internet connectivety
