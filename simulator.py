@@ -53,7 +53,7 @@ def run_simulation(video_folder, simulation_type):
 
             # Attach the factory to the streaming path for the video file
             mounts = server.get_mount_points()
-            mounts.add_factory("/"+ os.path.basename(video_file), factory)
+            mounts.add_factory("/" + os.path.basename(video_file), factory)
 
             # Print all the streams available
             print(f"Stream available at {STREAMING_URL}{os.path.basename(video_file)}")
@@ -101,9 +101,16 @@ if __name__ == "__main__":
             sys.exit(1)
 
         # Only append video files to the list of videos, files with extensions .mp4, .avi, .mkv.
-        videos = [os.path.join(video_folder,video) for video in os.listdir(video_folder) if os.path.isfile(os.path.join(video_folder, video)) and video.lower().endswith(('.mp4', '.avi', '.mkv'))]
+        videos = [
+            os.path.join(video_folder, video)
+            for video in os.listdir(video_folder)
+            if os.path.isfile(os.path.join(video_folder, video))
+            and video.lower().endswith((".mp4", ".avi", ".mkv"))
+        ]
         if not videos:
-            print(f"The video folder '{video_folder}' does not contain any video files.")
+            print(
+                f"The video folder '{video_folder}' does not contain any video files."
+            )
             sys.exit(1)
 
         # Check if the video files are accessible
