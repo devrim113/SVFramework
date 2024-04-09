@@ -48,7 +48,6 @@ def run_simulation(video_folder, simulation_type):
         for video_file in video_folder:
             launch_string = getattr(simulations, simulation_type)(video_file)
             factory = GstRtspServer.RTSPMediaFactory.new()
-            print(launch_string)
             # Set the launch string for the media factory
             factory.set_launch(launch_string)
             # Share the pipeline between all clients
