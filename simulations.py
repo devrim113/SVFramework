@@ -171,6 +171,7 @@ def packet_duplication(video_file, duplication_rate="1%"):
     Returns:
         str: The GStreamer launch string for the packet duplication simulation.
     """
+    # Replace the existing network interface settings with packet duplication
     subprocess.run(
         [
             "sudo",
@@ -186,6 +187,7 @@ def packet_duplication(video_file, duplication_rate="1%"):
         ],
         check=True,
     )
+    # Return a normal simulation string as the network simulation is now active
     return normal(video_file)
 
 
@@ -199,6 +201,7 @@ def packet_reordering(video_file, correlation="25%", delay="50ms"):
     Returns:
         str: The GStreamer launch string for the packet reordering simulation.
     """
+    # Replace the existing network interface settings with packet reordering
     subprocess.run(
         [
             "sudo",
@@ -216,6 +219,7 @@ def packet_reordering(video_file, correlation="25%", delay="50ms"):
         ],
         check=True,
     )
+    # Return a normal simulation string as the network simulation is now active
     return normal(video_file)
 
 
@@ -228,6 +232,7 @@ def packet_corruption(video_file, corruption_rate="0.1%"):
     Returns:
         str: The GStreamer launch string for the packet corruption simulation.
     """
+    # Replace the existing network interface settings with packet corruption
     subprocess.run(
         [
             "sudo",
@@ -243,6 +248,7 @@ def packet_corruption(video_file, corruption_rate="0.1%"):
         ],
         check=True,
     )
+    # Return a normal simulation string as the network simulation is now active
     return normal(video_file)
 
 
