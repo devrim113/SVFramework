@@ -303,7 +303,8 @@ def audio_sync(video_file, audio_delay_ms="500"):
     """
     return (
         f"( filesrc location=./{video_file} ! decodebin name=dec "
-        f"dec. ! queue ! audioconvert ! audioresample ! queue min-threshold-time={audio_delay_ms}000000 ! avenc_aac ! queue ! mux. "
+        f"dec. ! queue ! audioconvert ! audioresample !"
+        f"queue min-threshold-time={audio_delay_ms}000000 ! avenc_aac ! queue ! mux. "
         f"dec. ! videoconvert ! videoscale ! x264enc bitrate=500 ! queue ! mux. "
         f"matroskamux name=mux ! rtph264pay name=pay0 pt=96 )"
     )
@@ -325,8 +326,7 @@ def hardware_failure(video_file):
     streams_simulated += 1
     # Every fourth stream will be a black screen
     if streams_simulated % 4 == 0:
-        return (
-            "( videotestsrc pattern=black ! video/x-raw,width=1920,height=1080,framerate=24/1 ! x264enc bitrate=500 ! rtph264pay name=pay0 pt=96 )"
-        )
+        return ("( videotestsrc pattern=black ! \
+                video/x-raw,width=1920,height=1080,framerate=24/1 ! x264enc bitrate=500 ! rtph264pay name=pay0 pt=96 )")
     else:
         return normal(video_file)
