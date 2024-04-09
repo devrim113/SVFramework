@@ -7,6 +7,8 @@ It should not be run, but imported by the simulator script.
 import subprocess
 from config import NETWORK_INTERFACE
 
+streams_simulated = 0
+
 # ------------------------- Gstreamer Simulations -------------------------
 
 
@@ -252,4 +254,79 @@ def packet_corruption(video_file, corruption_rate="0.1%"):
     return normal(video_file)
 
 
+def network_congestion(video_file, rate="1mbit", limit="1000", buffer="1600"):
+    """
+    Simulate network congestion on the network interface by limiting the bandwidth.
+    Args:
+        video_file: The video file to stream.
+        rate: The maximum rate of traffic (e.g., '1mbit' for 1 Mbps).
+        limit: The maximum number of packets in the queue (to simulate buffer size).
+        buffer: The size of the buffer in bytes.
+    Returns:
+        str: The GStreamer launch string for the network congestion simulation.
+    """
+    # Replace the existing network interface settings to simulate congestion
+    subprocess.run(
+        [
+            "sudo",
+            "tc",
+            "qdisc",
+            "replace",
+            "dev",
+            NETWORK_INTERFACE,
+            "root",
+            "netem",
+            "rate",
+            rate,
+            "limit",
+            limit,
+            "buffer",
+            buffer,
+        ],
+        check=True,
+    )
+    # Return a normal simulation string as the network simulation is now active
+    return normal(video_file)
+
+
 # ------------------------- Camera Simulations -------------------------
+
+
+def audio_sync(video_file, audio_delay_ms="500"):
+    """
+    Simulate synchronization issues between audio and video by introducing a delay in the audio stream.
+    Args:
+        video_file: The video file to stream.
+        audio_delay_ms: The amount of delay to introduce to the audio stream, in milliseconds.
+    Returns:
+        str: The GStreamer launch string for the audio-video synchronization issue simulation.
+    """
+    return (
+        f"( filesrc location=./{video_file} ! decodebin name=dec "
+        f"dec. ! queue ! audioconvert ! audioresample ! queue min-threshold-time={audio_delay_ms}000000 ! avenc_aac ! queue ! mux. "
+        f"dec. ! videoconvert ! videoscale ! x264enc bitrate=500 ! queue ! mux. "
+        f"matroskamux name=mux ! rtph264pay name=pay0 pt=96 )"
+    )
+
+
+# ------------------------- Array Camera Simulations -------------------------
+
+
+def hardware_failure(video_file):
+    """
+    Simulate a hardware failure in an array camera by streaming a video
+    that provides no actual video content (e.g., a black screen).
+    Args:
+        video_file: The video file to stream. Not used in this simulation, but kept for consistency.
+    Returns:
+        str: The GStreamer launch string for the hardware failure simulation.
+    """
+    global streams_simulated
+    streams_simulated += 1
+    print(streams_simulated)
+    if streams_simulated % 4 == 0:
+        return (
+            "( videotestsrc pattern=black ! video/x-raw,width=1920,height=1080,framerate=24/1 ! x264enc bitrate=500 ! rtph264pay name=pay0 pt=96 )"
+        )
+    else:
+        return normal(video_file)
