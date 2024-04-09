@@ -7,7 +7,8 @@ The available simulation types are defined in the simulations module.
 Usage: python simulator.py <video_folder> <simulation_type>
 """
 
-from config import STREAMING_PORT, STREAMING_URL
+import subprocess
+from config import NETWORK_INTERFACE, STREAMING_PORT, STREAMING_URL
 import signal
 import sys
 import simulations
@@ -73,15 +74,36 @@ def run_simulation(video_folder, simulation_type):
         """
         Stop the RTSP server when a SIGINT signal is received.
         """
-        print("\nStopping RTSP server")
+        print("\nStopping RTSP server...")
         loop.quit()
         print("Server stopped successfully.")
+        remove_network_simulation()
         sys.exit(0)
 
     # Handle SIGINT for stopping the server
     signal.signal(signal.SIGINT, handle_sigint)
 
     loop.run()
+
+
+def remove_network_simulation():
+    """
+    Remove the introduced tc configurations to simulate network conditions.
+    Args:
+        None
+    Returns:
+        None
+    """
+    print("Stopping network simulation...")
+    try:
+        subprocess.run(
+            ["sudo", "tc", "qdisc", "del", "dev", NETWORK_INTERFACE, "root"],
+            check=True,
+            stderr=subprocess.DEVNULL,
+        )
+        print("Network simulation stopped.")
+    except subprocess.CalledProcessError:
+        print("No network simulation active, skipping.")
 
 
 if __name__ == "__main__":
