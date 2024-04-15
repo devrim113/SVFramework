@@ -87,7 +87,8 @@ def minimum_fps(url, fps=20, duration=10):
 
 def minimum_resolution(url, min_width=640, min_height=480, duration=10):
     """
-    Monitor the resolution of a live RTSP stream in real-time and checks if it meets a minimum resolution for a given duration.
+    Monitor the resolution of a live RTSP stream in real-time and checks if
+    it meets a minimum resolution for a given duration.
     Args:
         url (str): URL of the RTSP stream.
         duration (int): Duration in seconds to monitor the stream.
