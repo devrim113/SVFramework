@@ -69,7 +69,7 @@ def increased_latency(video_file, delay="100ms", jitter="10ms"):
     return normal(video_file)
 
 
-def packet_loss(video_file, loss_rate="1%"):
+def packet_loss(video_file, loss_rate="10%"):
     """
     Simulate a video stream with packet loss to test the system's ability to handle network errors.
     Args:
@@ -130,7 +130,7 @@ def limited_bandwidth(video_file, rate="1mbit"):
     return normal(video_file)
 
 
-def jitter(video_file, delay="100ms", jitter="20ms"):
+def jitter(video_file, delay="100ms", jitter="50ms"):
     """
     Simulate a video stream with jitter in network latency.
     Introduces variability in the delay of packets.
@@ -164,7 +164,7 @@ def jitter(video_file, delay="100ms", jitter="20ms"):
     return normal(video_file)
 
 
-def packet_duplication(video_file, duplication_rate="1%"):
+def packet_duplication(video_file, duplication_rate="10%"):
     """
     Simulate packet duplication on the network interface.
     Args:
@@ -254,18 +254,18 @@ def packet_corruption(video_file, corruption_rate="0.1%"):
     return normal(video_file)
 
 
-def network_congestion(video_file, rate="1mbit", limit="1000", buffer="1600"):
+def network_congestion(video_file, rate="1mbit", burst="10kb", latency="50ms"):
     """
-    Simulate network congestion on the network interface by limiting the bandwidth.
+    Simulate network congestion on the network interface by limiting the bandwidth using TBF along with netem for delay.
     Args:
         video_file: The video file to stream.
         rate: The maximum rate of traffic (e.g., '1mbit' for 1 Mbps).
-        limit: The maximum number of packets in the queue (to simulate buffer size).
-        buffer: The size of the buffer in bytes.
+        burst: The maximum burst size allowed (controls burstiness).
+        latency: Simulate additional delay to represent network congestion effects.
     Returns:
         str: The GStreamer launch string for the network congestion simulation.
     """
-    # Replace the existing network interface settings to simulate congestion
+
     subprocess.run(
         [
             "sudo",
@@ -275,13 +275,17 @@ def network_congestion(video_file, rate="1mbit", limit="1000", buffer="1600"):
             "dev",
             NETWORK_INTERFACE,
             "root",
+            "handle",
+            "1:",
             "netem",
             "rate",
             rate,
-            "limit",
-            limit,
-            "buffer",
-            buffer,
+            "delay",
+            latency,
+            "loss",
+            "0.1%",
+            "duplicate",
+            "0.1%",
         ],
         check=True,
     )
@@ -328,5 +332,25 @@ def hardware_failure(video_file):
     if streams_simulated % 4 == 0:
         return "( videotestsrc pattern=black ! video/x-raw,width=1920,height=1080,framerate=24/1 \
                 ! x264enc bitrate=500 ! rtph264pay name=pay0 pt=96 )"
+    else:
+        return normal(video_file)
+
+
+def camera_delay(video_file):
+    """
+    Simulate one of the cameras in an array camera system having a delay in its video stream.
+    Args:
+        video_file: The video file to stream.
+    Returns:
+        str: The GStreamer launch string for the camera delay simulation.
+    """
+    global streams_simulated
+    streams_simulated += 1
+    # Every fourth stream will have a delay
+    if streams_simulated % 4 == 0:
+        return (
+            f"( filesrc location=./{video_file} ! decodebin ! queue min-threshold-time=10000000000000000 ! "
+            f"x264enc bitrate=500 ! rtph264pay name=pay0 pt=96 )"
+        )
     else:
         return normal(video_file)

@@ -109,11 +109,11 @@ def remove_network_simulation():
 
 if __name__ == "__main__":
     # Get the available simulation types from the simulation module
-    simulation_types = [
+    simulation_types = sorted([
         func
         for func in dir(simulations)
         if callable(getattr(simulations, func)) and not func.startswith("__")
-    ]
+    ], key=lambda x: getattr(simulations, x).__code__.co_firstlineno)
 
     # Get the simulation type from the command line arguments
     if len(sys.argv) > 2:
@@ -129,7 +129,7 @@ if __name__ == "__main__":
             os.path.join(video_folder, video)
             for video in os.listdir(video_folder)
             if os.path.isfile(os.path.join(video_folder, video))
-            and video.lower().endswith((".mp4", ".avi", ".mkv"))
+            and video.lower().endswith((".mp4", ".avi", ".mkv", ".ts"))
         ]
 
         # Check if the video folder contains any video files
