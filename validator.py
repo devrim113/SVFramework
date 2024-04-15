@@ -17,11 +17,14 @@ if __name__ == "__main__":
         print("Usage: python validation.py <streaming_url>")
         sys.exit(1)
 
-    validation_types = sorted([
-        func
-        for func in dir(validations)
-        if callable(getattr(validations, func)) and not func.startswith("__")
-    ], key=lambda x: getattr(validations, x).__code__.co_firstlineno)
+    validation_types = sorted(
+        [
+            func
+            for func in dir(validations)
+            if callable(getattr(validations, func)) and not func.startswith("__")
+        ],
+        key=lambda x: getattr(validations, x).__code__.co_firstlineno,
+    )
 
     for func in validation_types:
         assert getattr(validations, func)(streaming_url), f"Validation {func} failed."

@@ -97,13 +97,17 @@ def minimum_resolution(url, min_width=640, min_height=480, duration=10):
     print(f"Minimum resolution of {min_width}x{min_height}...\t", end="")
     # Command to decode the stream and extract frame resolution in real-time
     cmd = [
-        'ffmpeg',
-        '-i', url,
-        '-vf', 'showinfo',  # Use showinfo filter to get information about each frame
-        '-an',  # Disable audio processing to focus on video
-        '-t', str(duration),  # Limit the processing to the specified duration
-        '-f', 'null',  # Output to null since we only care about the logs
-        '-'  # Output to stdout for parsing
+        "ffmpeg",
+        "-i",
+        url,
+        "-vf",
+        "showinfo",  # Use showinfo filter to get information about each frame
+        "-an",  # Disable audio processing to focus on video
+        "-t",
+        str(duration),  # Limit the processing to the specified duration
+        "-f",
+        "null",  # Output to null since we only care about the logs
+        "-",  # Output to stdout for parsing
     ]
 
     # Start the ffmpeg process
@@ -115,18 +119,22 @@ def minimum_resolution(url, min_width=640, min_height=480, duration=10):
     try:
         for line in process.stderr:
             # Use a regex to find lines that contain resolution information
-            if 'showinfo' in line:
-                match = re.search(r'([0-9]+)x([0-9]+)\s', line)
+            if "showinfo" in line:
+                match = re.search(r"([0-9]+)x([0-9]+)\s", line)
                 if match:
                     width, height = map(int, match.groups())
                     if width < min_width or height < min_height:
                         resolution_met = False
-                        print(f"Resolution below minimum at {width}x{height}, required {min_width}x{min_height}")
+                        print(
+                            f"Resolution below minimum at {width}x{height}, required {min_width}x{min_height}"
+                        )
                         break
 
         # Check if the minimum resolution was maintained throughout the duration
         if resolution_met and (time.time() - start_time >= duration):
-            print(f"Measured Resolution: {width}x{height} >= {min_width}x{min_height} for {duration} seconds.")
+            print(
+                f"Measured Resolution: {width}x{height} >= {min_width}x{min_height} for {duration} seconds."
+            )
             return True
         return False
     except Exception as e:
