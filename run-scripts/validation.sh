@@ -22,8 +22,10 @@ if ps -p $PID > /dev/null; then
     for video in "$1"/*; do
     (
         video="${video#videos/}"
-        echo "Checking video: $video"
-        python3 validator.py rtsp://localhost:8554/"$video"
+        if [[ $video == *.mp4 || $video == *.ts ]]; then
+            echo "Checking video: $video"
+            python3 validator.py rtsp://localhost:8554/"$video"
+        fi
     )
     done
 else
