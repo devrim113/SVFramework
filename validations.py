@@ -5,7 +5,7 @@ It should not be run, but imported by the validator script.
 """
 
 import subprocess
-import re
+import cv2
 import time
 
 
@@ -85,62 +85,41 @@ def minimum_fps(url, fps=20, duration=10):
         return False
 
 
-def minimum_resolution(url, min_width=640, min_height=480, duration=10):
+def minimum_resolution(rtsp_url, duration=10, min_width=1280, min_height=720):
     """
-    Monitor the resolution of a live RTSP stream in real-time and checks if
-    it meets a minimum resolution for a given duration.
+    Checks if a live RTSP stream maintains at least the specified resolution.
     Args:
-        url (str): URL of the RTSP stream.
+        rtsp_url (str): URL of the RTSP stream.
         duration (int): Duration in seconds to monitor the stream.
         min_width (int): Minimum width in pixels.
         min_height (int): Minimum height in pixels.
+    Returns:
+        bool: True if the stream maintains the minimum resolution, False otherwise.
     """
     print(f"Minimum resolution of {min_width}x{min_height}...\t", end="")
-    # Command to decode the stream and extract frame resolution in real-time
-    cmd = [
-        "ffmpeg",
-        "-i",
-        url,
-        "-vf",
-        "showinfo",  # Use showinfo filter to get information about each frame
-        "-an",  # Disable audio processing to focus on video
-        "-t",
-        str(duration),  # Limit the processing to the specified duration
-        "-f",
-        "null",  # Output to null since we only care about the logs
-        "-",  # Output to stdout for parsing
-    ]
-
-    # Start the ffmpeg process
-    process = subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True)
+    cap = cv2.VideoCapture(rtsp_url)
+    if not cap.isOpened():
+        print("Error: Could not open stream")
+        return False
 
     start_time = time.time()
-    resolution_met = True  # Assume resolution is met unless proven otherwise
-
     try:
-        for line in process.stderr:
-            # Use a regex to find lines that contain resolution information
-            if "showinfo" in line:
-                match = re.search(r"([0-9]+)x([0-9]+)\s", line)
-                if match:
-                    width, height = map(int, match.groups())
-                    if width < min_width or height < min_height:
-                        resolution_met = False
-                        print(
-                            f"Resolution below minimum at {width}x{height}, required {min_width}x{min_height}"
-                        )
-                        break
+        while time.time() - start_time < duration:
+            ret, frame = cap.read()
+            if not ret:
+                print("Error: Can't receive frame. Stream may have ended.")
+                return False
 
-        # Check if the minimum resolution was maintained throughout the duration
-        if resolution_met and (time.time() - start_time >= duration):
-            print(
-                f"Measured Resolution: {width}x{height} >= {min_width}x{min_height} for {duration} seconds."
-            )
-            return True
-        return False
-    except Exception as e:
-        print(f"Error processing ffmpeg output: {e}")
-        return False
+            height, width = frame.shape[:2]
+            if width < min_width or height < min_height:
+                print(f"Resolution check failed: {width}x{height} is below minimum {min_width}x{min_height}")
+                return False
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
+
+    print(f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}")
+    return True
 
 
 # def monitor_av_sync(url):

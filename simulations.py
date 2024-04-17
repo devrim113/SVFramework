@@ -34,6 +34,23 @@ def low_bitrate(video_file):
     return f"( filesrc location=./{video_file} ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
 
 
+def low_resolution(video_file, target_width=360, target_height=640):
+    """
+    Simulate a lower resolution video stream by downscaling the input video.
+    Args:
+        video_file: The video file to stream.
+        target_width (int): Target width of the downscaled video in pixels.
+        target_height (int): Target height of the downscaled video in pixels.
+    Returns:
+        str: The GStreamer launch string for the low-resolution simulation.
+    """
+    return (
+        f"filesrc location={video_file} ! tsdemux ! h265parse ! "
+        f"avdec_h265 ! videoscale ! video/x-raw,width={target_width},height={target_height} ! "
+        f"x264enc ! rtph264pay name=pay0 pt=96"
+    )
+
+
 # ------------------------- Network Simulations -------------------------
 
 
@@ -254,13 +271,12 @@ def packet_corruption(video_file, corruption_rate="0.1%"):
     return normal(video_file)
 
 
-def network_congestion(video_file, rate="1mbit", burst="10kb", latency="50ms"):
+def network_congestion(video_file, rate="1mbit", latency="50ms"):
     """
     Simulate network congestion on the network interface by limiting the bandwidth using TBF along with netem for delay.
     Args:
         video_file: The video file to stream.
         rate: The maximum rate of traffic (e.g., '1mbit' for 1 Mbps).
-        burst: The maximum burst size allowed (controls burstiness).
         latency: Simulate additional delay to represent network congestion effects.
     Returns:
         str: The GStreamer launch string for the network congestion simulation.
