@@ -112,7 +112,9 @@ def minimum_resolution(rtsp_url, duration=10, min_width=1280, min_height=720):
 
             height, width = frame.shape[:2]
             if width < min_width or height < min_height:
-                print(f"Resolution check failed: {width}x{height} is below minimum {min_width}x{min_height}")
+                print(
+                    f"Resolution check failed: {width}x{height} is below minimum {min_width}x{min_height}"
+                )
                 return False
     finally:
         cap.release()
