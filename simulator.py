@@ -20,12 +20,13 @@ from gi.repository import Gst, GstRtspServer, GLib
 import os
 
 
-def run_simulation(video_folder, simulation_type):
+def run_simulation(videos, simulation_type, video_folder_path):
     """
     Run the specified simulation type as an RTSP server for each video file in the video folder.
     Args:
-        video_folder: The folder containing the video files to stream.
+        videos: The folder containing the video files to stream.
         simulation_type: The type of simulation to run.
+        video_folder_path: The path to the video folder.
     Returns:
         None
     Starts:
@@ -45,7 +46,7 @@ def run_simulation(video_folder, simulation_type):
     # Perform the operations for the specified simulation type
     if simulation_type in simulation_types:
         print(f"Running {simulation_type} simulation...")
-        for video_file in video_folder:
+        for video_file in videos:
             launch_string = getattr(simulations, simulation_type)(video_file)
             factory = GstRtspServer.RTSPMediaFactory.new()
             # Set the launch string for the media factory
@@ -79,6 +80,7 @@ def run_simulation(video_folder, simulation_type):
         loop.quit()
         print("Server stopped successfully.")
         remove_network_simulation()
+        delete_temp_videos(video_folder_path)
         sys.exit(0)
 
     # Handle SIGINT for stopping the server
@@ -95,7 +97,7 @@ def remove_network_simulation():
     Returns:
         None
     """
-    print("Stopping network simulation...")
+    print("\nStopping network simulation...")
     try:
         subprocess.run(
             ["sudo", "tc", "qdisc", "del", "dev", NETWORK_INTERFACE, "root"],
@@ -105,6 +107,26 @@ def remove_network_simulation():
         print("Network simulation stopped.")
     except subprocess.CalledProcessError:
         print("No network simulation active, skipping.")
+
+
+def delete_temp_videos(video_folder_path):
+    """
+    Delete the temporary video files created during the simulations in the video folder.
+    Delete all video files that end in '_temp' with any extension.
+    Args:
+        video_folder: The folder containing the video files to delete.
+    Returns:
+        None
+    """
+    print("\nDeleting temporary video files...")
+    for video_file in os.listdir(video_folder_path):
+        if "_temp" in video_file:
+            full_path = os.path.join(video_folder_path, video_file)
+            print(f"Deleting temporary video file {full_path}...")
+            os.remove(full_path)
+            print(f"Deleted {full_path} successfully.")
+    else:
+        print("No temporary video files found, skipping.")
 
 
 if __name__ == "__main__":
@@ -164,4 +186,4 @@ if __name__ == "__main__":
         print("Available simulations: " + ", ".join(simulation_types))
         sys.exit(1)
 
-    run_simulation(videos, simulation_type)
+    run_simulation(videos, simulation_type, video_folder)

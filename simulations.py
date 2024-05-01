@@ -34,23 +34,6 @@ def low_bitrate(video_file):
     return f"( filesrc location=./{video_file} ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
 
 
-def low_resolution(video_file, target_width=360, target_height=640):
-    """
-    Simulate a lower resolution video stream by downscaling the input video.
-    Args:
-        video_file: The video file to stream.
-        target_width (int): Target width of the downscaled video in pixels.
-        target_height (int): Target height of the downscaled video in pixels.
-    Returns:
-        str: The GStreamer launch string for the low-resolution simulation.
-    """
-    return (
-        f"filesrc location={video_file} ! tsdemux ! h265parse ! "
-        f"avdec_h265 ! videoscale ! video/x-raw,width={target_width},height={target_height} ! "
-        f"x264enc ! rtph264pay name=pay0 pt=96"
-    )
-
-
 # ------------------------- Network Simulations -------------------------
 
 
@@ -370,3 +353,81 @@ def camera_delay(video_file):
         )
     else:
         return normal(video_file)
+
+
+# ------------------------- OCR Simulations -------------------------
+
+
+def low_resolution(video_file, scale_factor=0.2):
+    """
+    Simulate a low resolution video by downscaling the input video.
+    Args:
+        video_file: The video file to process.
+        scale_factor (float): The factor to scale the video by.
+    Returns:
+        str: The GStreamer launch string for the low resolution simulation.
+    """
+    output_video = (
+        video_file.rsplit(".", 1)[0]
+        + "_temp_low_resolution."
+        + video_file.rsplit(".", 1)[1]
+    )
+    command = [
+        "ffmpeg",
+        "-i",
+        video_file,
+        "-vf",
+        f"scale=iw*{scale_factor}:-1",
+        output_video,
+    ]
+    subprocess.run(command)
+    print(f"Created video file with low resolution: {output_video}")
+    return normal(output_video)
+
+
+def compression_artifacts(video_file, quality=50):
+    """
+    Simulate compression artifacts in a video by re-encoding it with a lower quality setting.
+    Args:
+        video_file: The video file to process.
+        quality (int): The quality setting for the re-encoding (0-51 with 0 being lossless and 51 being the worst).
+    Returns:
+        str: The GStreamer launch string for the compression artifacts simulation.
+    """
+    output_video = (
+        video_file.rsplit(".", 1)[0]
+        + "_temp_compression_artifacts."
+        + video_file.rsplit(".", 1)[1]
+    )
+    command = ["ffmpeg", "-i", video_file, "-crf", str(quality), output_video]
+    subprocess.run(command)
+    print(f"Created video file with compression artifacts: {output_video}")
+    return normal(output_video)
+
+
+def change_brightness(video_file, brightness_factor=0.5):
+    """
+    Adjust the brightness of a video by applying a brightness filter with FFmpeg.
+    Args:
+        video_file (str): The video file to process.
+        brightness_factor (float): The brightness adjustment factor (-1.0 to 1.0,
+                                   where negative values decrease and positive values increase brightness).
+    Returns:
+        str: The path to the adjusted video.
+    """
+    output_video = (
+        video_file.rsplit(".", 1)[0]
+        + "_temp_brightness."
+        + video_file.rsplit(".", 1)[1]
+    )
+    command = [
+        "ffmpeg",
+        "-i",
+        video_file,
+        "-vf",
+        f"eq=brightness={brightness_factor}",
+        output_video,
+    ]
+    subprocess.run(command)
+    print(f"Created video file with adjusted brightness: {output_video}")
+    return normal(output_video)
