@@ -459,12 +459,12 @@ def dynamic_change_brightness(video_file, brightness_factor=0.8, period=20):
     return normal(output_video)
 
 
-def complex_blur(video_file, blur_factor=9):
+def complex_blur(video_file, blur_factor=1.0):
     """
     Apply motion blur to simulate rapid movements or camera shake.
     Args:
         video_file (str): The video file to process.
-        blur_factor (int): Defines the intensity of motion blur effect.
+        blur_factor (float): Defines the intensity of motion blur effect, between 0 and 1.
     Returns:
         str: The path to the motion blurred video.
     """
@@ -475,12 +475,10 @@ def complex_blur(video_file, blur_factor=9):
     )
     command = [
         "ffmpeg",
-        "-hwaccel",
-        "auto",
         "-i",
         video_file,
         "-vf",
-        f"minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1',tblend='all_mode=average:all_opacity=0.{blur_factor}'",
+        f"minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1',tblend='all_mode=average:all_opacity={blur_factor}'",
         output_video,
     ]
     subprocess.run(command)
@@ -591,4 +589,34 @@ def background_noise(video_file, noise_intensity=50):
     ]
     subprocess.run(command)
     print(f"Created video file with background noise: {output_video}")
+    return normal(output_video)
+
+
+def horizontal_drift(video_file, duration_effect=20):
+    """
+    Apply a horizontal drift effect to a video, panning from right to left using the zoompan filter.
+    The effect duration determines how quickly the pan moves across the screen.
+    Args:
+        video_file (str): The video file to process.
+        duration_effect (int): The duration in seconds over which the effect should complete.
+    Returns:
+        str: The path to the video with the horizontal drift effect.
+    """
+    output_video = (
+        video_file.rsplit(".", 1)[0]
+        + "_temp_horizontal_drift."
+        + video_file.rsplit(".", 1)[1]
+    )
+
+    # FFmpeg command to apply the horizontal drift
+    command = [
+        "ffmpeg",
+        "-i",
+        video_file,
+        "-vf",
+        f"crop=iw/1.5:ih:iw/4*t/{duration_effect}:0",
+        output_video,
+    ]
+    subprocess.run(command)
+    print(f"Created video file with horizontal drift effect: {output_video}")
     return normal(output_video)

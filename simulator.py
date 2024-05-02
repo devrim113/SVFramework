@@ -126,7 +126,7 @@ def delete_temp_videos(video_folder_path):
             os.remove(full_path)
             print(f"Deleted {full_path} successfully.")
     else:
-        print("No temporary video files found, skipping.")
+        print("No more temporary video files found, skipping.")
 
 
 if __name__ == "__main__":
