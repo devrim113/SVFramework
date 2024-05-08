@@ -486,7 +486,7 @@ def complex_blur(video_file, blur_factor=1.0):
     return normal(output_video)
 
 
-def simple_blur(video_file, blur_intensity=5):
+def simple_blur(video_file, blur_intensity=1):
     """
     Apply motion blur to simulate rapid movements or camera shake.
     Args:
@@ -553,7 +553,6 @@ def dynamic_change_contrast(video_file, contrast_factor=900.0, period=20):
         + "_temp_dynamic_contrast."
         + video_file.rsplit(".", 1)[1]
     )
-    # Adjusting the formula to ensure smoother transition
     command = [
         "ffmpeg",
         "-i",
@@ -607,8 +606,6 @@ def horizontal_drift(video_file, duration_effect=20):
         + "_temp_horizontal_drift."
         + video_file.rsplit(".", 1)[1]
     )
-
-    # FFmpeg command to apply the horizontal drift
     command = [
         "ffmpeg",
         "-i",

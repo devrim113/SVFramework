@@ -23,7 +23,7 @@ if ps -p $PID > /dev/null; then
     (
         video="${video#videos/}"
         if [[ $video == *.mp4 || $video == *.ts ]]; then
-            echo "Checking video: $video"
+            printf "\nChecking video: $video\n"
             python3 validator.py rtsp://localhost:8554/"$video"
         fi
     )
@@ -34,3 +34,6 @@ fi
 
 # Kill the simulator process
 kill -2 $PID
+
+# Wait for the simulator process to exit
+wait $PID

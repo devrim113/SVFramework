@@ -106,7 +106,7 @@ def remove_network_simulation():
         )
         print("Network simulation stopped.")
     except subprocess.CalledProcessError:
-        print("No network simulation active, skipping.")
+        print("No network simulation active, continuing.")
 
 
 def delete_temp_videos(video_folder_path):
@@ -126,7 +126,7 @@ def delete_temp_videos(video_folder_path):
             os.remove(full_path)
             print(f"Deleted {full_path} successfully.")
     else:
-        print("No more temporary video files found, skipping.")
+        print("No more temporary video files found, continuing.")
 
 
 if __name__ == "__main__":

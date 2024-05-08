@@ -15,3 +15,4 @@ gstreamer1.0-gtk3
 gstreamer1.0-qt5
 gstreamer1.0-pulseaudio
 ffmpeg
+gir1.2-gst-rtsp-server-1.0
