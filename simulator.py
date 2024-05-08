@@ -32,6 +32,11 @@ def run_simulation(videos, simulation_type, video_folder_path):
     Starts:
         RTSP server for each video file in the video folder.
     """
+    # Check if the simulation type is valid
+    if simulation_type not in simulation_types:
+        print("Invalid simulation type. Please specify a valid simulation.")
+        print("Available simulations: " + ", ".join(simulation_types))
+        sys.exit(1)
 
     # Initialize GStreamer
     Gst.init(None)
@@ -44,27 +49,21 @@ def run_simulation(videos, simulation_type, video_folder_path):
     factory = GstRtspServer.RTSPMediaFactory.new()
 
     # Perform the operations for the specified simulation type
-    if simulation_type in simulation_types:
-        print(f"Running {simulation_type} simulation...")
-        for video_file in videos:
-            launch_string = getattr(simulations, simulation_type)(video_file)
-            factory = GstRtspServer.RTSPMediaFactory.new()
-            # Set the launch string for the media factory
-            factory.set_launch(launch_string)
-            # Share the pipeline between all clients
-            factory.set_shared(True)
+    print(f"Running {simulation_type} simulation...")
+    for video_file in videos:
+        launch_string = getattr(simulations, simulation_type)(video_file)
+        factory = GstRtspServer.RTSPMediaFactory.new()
+        # Set the launch string for the media factory
+        factory.set_launch(launch_string)
+        # Share the pipeline between all clients
+        factory.set_shared(True)
 
-            # Attach the factory to the streaming path for the video file
-            mounts = server.get_mount_points()
-            mounts.add_factory("/" + os.path.basename(video_file), factory)
+        # Attach the factory to the streaming path for the video file
+        mounts = server.get_mount_points()
+        mounts.add_factory("/" + os.path.basename(video_file), factory)
 
-            # Print all the streams available
-            print(f"Stream available at {STREAMING_URL}{os.path.basename(video_file)}")
-
-    else:
-        print("Invalid simulation type. Please specify a valid simulation.")
-        print("Available simulations: " + ", ".join(simulation_types))
-        sys.exit(1)
+        # Print all the streams available
+        print(f"Stream available at {STREAMING_URL}{os.path.basename(video_file)}")
 
     # Start the server
     server.attach(None)
@@ -86,6 +85,7 @@ def run_simulation(videos, simulation_type, video_folder_path):
     # Handle SIGINT for stopping the server
     signal.signal(signal.SIGINT, handle_sigint)
 
+    print("Simulator is ready")
     loop.run()
 
 

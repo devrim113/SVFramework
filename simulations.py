@@ -380,7 +380,7 @@ def low_resolution(video_file, scale_factor=0.2):
         f"scale=iw*{scale_factor}:-1",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with low resolution: {output_video}")
     return normal(output_video)
 
@@ -400,7 +400,7 @@ def compression_artifacts(video_file, quality=50):
         + video_file.rsplit(".", 1)[1]
     )
     command = ["ffmpeg", "-i", video_file, "-crf", str(quality), output_video]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with compression artifacts: {output_video}")
     return normal(output_video)
 
@@ -428,7 +428,7 @@ def change_brightness(video_file, brightness_factor=0.5):
         f"eq=brightness={brightness_factor}",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with adjusted brightness: {output_video}")
     return normal(output_video)
 
@@ -454,7 +454,7 @@ def dynamic_change_brightness(video_file, brightness_factor=0.8, period=20):
         f"eq=brightness=sin(2*PI*t/{period})*{brightness_factor}:eval=frame",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with dynamic brightness adjustment: {output_video}")
     return normal(output_video)
 
@@ -481,7 +481,7 @@ def complex_blur(video_file, blur_factor=1.0):
         f"minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1',tblend='all_mode=average:all_opacity={blur_factor}'",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with motion blur: {output_video}")
     return normal(output_video)
 
@@ -508,7 +508,7 @@ def simple_blur(video_file, blur_intensity=1):
         f"avgblur={blur_intensity}",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with motion blur: {output_video}")
     return normal(output_video)
 
@@ -533,7 +533,7 @@ def change_contrast(video_file, contrast_factor=2.0):
         f"eq=contrast={contrast_factor}",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with adjusted contrast: {output_video}")
     return normal(output_video)
 
@@ -561,7 +561,7 @@ def dynamic_change_contrast(video_file, contrast_factor=900.0, period=20):
         f"eq=contrast='sin(2*PI*t/{period})*{contrast_factor/1000} + 1':eval=frame",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with dynamic contrast adjustment: {output_video}")
     return normal(output_video)
 
@@ -586,7 +586,7 @@ def background_noise(video_file, noise_intensity=50):
         f"noise=alls={noise_intensity}:allf=t+u",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with background noise: {output_video}")
     return normal(output_video)
 
@@ -614,6 +614,6 @@ def horizontal_drift(video_file, duration_effect=20):
         f"crop=iw/1.5:ih:iw/4*t/{duration_effect}:0",
         output_video,
     ]
-    subprocess.run(command)
+    subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with horizontal drift effect: {output_video}")
     return normal(output_video)
