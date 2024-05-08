@@ -52,54 +52,42 @@ def stream_running(url):
     return False
 
 
-# def minimum_fps(url, fps=20, duration=10):
-#     """
-#     Check if the actual FPS of the RTSP stream is at least the specified value over a given duration.
-#     Args:
-#         url: The URL of the RTSP stream.
-#         fps: The minimum frames per second expected.
-#         duration: The duration in seconds over which to measure the FPS.
-#     Returns:
-#         bool: True if the stream FPS meets or exceeds the specified value, False otherwise.
-#     """
-#     print(f"Minimum FPS of {fps}...\t", end="")
-#     command = [
-#         "ffmpeg",
-#         "-i",
-#         url,
-#         "-vcodec",
-#         "copy",
-#         "-an",
-#         "-t",
-#         str(duration),
-#         "-f",
-#         "null",
-#         "-",
-#     ]
+def minimum_fps(rtsp_url, duration=10, min_fps=20):
+    """
+    Checks if a live RTSP stream maintains at least the specified frame rate.
+    Args:
+        rtsp_url (str): URL of the RTSP stream.
+        duration (int): Duration in seconds to monitor the stream.
+        min_fps (int): Minimum frame rate.
+    Returns:
+        bool: True if the stream maintains the minimum frame rate, False otherwise.
+    """
+    __print_test(f"Minimum FPS of {min_fps}")
+    cap = cv2.VideoCapture(rtsp_url)
+    if not cap.isOpened():
+        __print_failure("Error! Could not open stream")
+        return False
 
-#     try:
-#         # Execute the command and capture the output
-#         result = subprocess.run(command, text=True, stderr=subprocess.PIPE)
+    start_time = time.time()
+    frame_count = 0
+    try:
+        while time.time() - start_time < duration:
+            ret, _ = cap.read()
+            if not ret:
+                __print_failure("Error! Can't receive frame. Stream may have ended.")
+                return False
+            frame_count += 1
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
 
-#         # Parse the output to find the number of frames processed
-#         output_lines = result.stderr.split("\n")
-#         print(output_lines)
-#         frame_lines = [line for line in output_lines if "frame=" in line]
-#         print(frame_lines)
-#         if frame_lines:
-#             # Last occurrence of 'frame=' will have the count at the end of processing
-#             last_line = frame_lines[-1]
-#             frame_count = int(last_line.split("frame=")[1].split()[0])
-#             # Calculate actual FPS
-#             actual_fps = frame_count / duration
-#             print(f"Success! Measured FPS: {actual_fps} >= {fps}")
-#             return actual_fps >= fps
-#         else:
-#             print("No frame information found in ffmpeg output.")
-#             return False
-#     except Exception as e:
-#         print(f"Error measuring FPS with ffmpeg: {e}")
-#         return False
+    fps = frame_count / duration
+    if fps < min_fps:
+        __print_failure(f"Failed! Frame rate check: {fps} < {min_fps}")
+        return False
+
+    __print_success(f"Success! Measured FPS: {fps} >= {min_fps}")
+    return True
 
 
 def minimum_resolution(rtsp_url, duration=10, min_width=1280, min_height=720):
@@ -141,45 +129,6 @@ def minimum_resolution(rtsp_url, duration=10, min_width=1280, min_height=720):
         f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}"
     )
     return True
-
-
-# def monitor_av_sync(url):
-#     """
-#     Monitors the audio-video synchronization of an RTSP stream in real-time using FFmpeg.
-#     Args:
-#         url: The URL of the RTSP stream from GStreamer.
-#     Retruns:
-#         None
-#     """
-#     cmd = [
-#         'ffmpeg',
-#         '-i', url,
-#         '-map', '0:v:0',  # Select the first video stream
-#         '-map', '0:a:0',  # Select the first audio stream
-#         '-vcodec', 'copy',  # Copy the video codec
-#         '-acodec', 'copy',  # Copy the audio codec
-#         '-f', 'null',  # Output to null since we only care about the logs
-#         '-'  # Output to stdout for parsing
-#     ]
-
-#     # Start the ffmpeg process
-#     process = subprocess.Popen(cmd, stderr=subprocess.PIPE, text=True)
-
-#     def parse_output(process):
-#         while True:
-#             line = process.stderr.readline()
-#             if not line:
-#                 break
-
-#             # Custom parsing logic to extract timestamps can be placed here
-#             print(line)  # Example: output raw line for demonstration
-
-#     # Run the parser in a separate thread to avoid blocking
-#     parser_thread = threading.Thread(target=parse_output, args=(process,))
-#     parser_thread.start()
-
-#     # Wait for the thread to finish if necessary, or it can run indefinitely
-#     parser_thread.join()
 
 
 def not_black(rtsp_url):
