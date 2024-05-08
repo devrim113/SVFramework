@@ -46,6 +46,5 @@ if __name__ == "__main__":
         print("\033[32mSuccess! All validations passed.\033[0m")
     else:
         print(
-            f"\033[31mErrors found: {error_count} validations failed. \
-                Failed validations: {', '.join(failed_validations)}\033[0m"
+            f"\033[31mErrors found: {error_count}. Failed validations: {', '.join(failed_validations)}\033[0m"
         )
