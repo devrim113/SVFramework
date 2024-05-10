@@ -80,12 +80,14 @@ def run_simulation(videos, simulation_type, video_folder_path):
         print("Server stopped successfully.")
         remove_network_simulation()
         delete_temp_videos(video_folder_path)
+        open("simulator.log", "w").close()
         sys.exit(0)
 
     # Handle SIGINT for stopping the server
     signal.signal(signal.SIGINT, handle_sigint)
 
-    print("Simulator is ready")
+    with open("simulator.log", "w") as file:
+        file.write("Simulator is ready")
     loop.run()
 
 
@@ -186,4 +188,5 @@ if __name__ == "__main__":
         print("Available simulations: " + ", ".join(simulation_types))
         sys.exit(1)
 
+    # Run the simulation
     run_simulation(videos, simulation_type, video_folder)

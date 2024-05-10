@@ -13,7 +13,13 @@ fi
 python3 simulator.py $1 $2 &
 PID=$!
 
-# Give the simulator process some time to start
+# Wait for the simulator to start by checking the log file
+while true; do
+    if grep -q "Simulator is ready" <(tail -n 1 simulator.log); then
+        break
+    fi
+    sleep 1
+done
 sleep 1
 
 # Check if the python simulator process is still running
@@ -22,7 +28,7 @@ if ps -p $PID > /dev/null; then
     for video in "$1"/*; do
     (
         video="${video#videos/}"
-        if [[ $video == *.mp4 || $video == *.ts ]]; then
+        if [[ $video == *.mp4 || $video == *.ts ]] && [[ $video != *temp* ]]; then
             printf "\nChecking video: $video\n"
             python3 validator.py rtsp://localhost:8554/"$video"
         fi
