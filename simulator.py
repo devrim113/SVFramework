@@ -8,7 +8,7 @@ Usage: python simulator.py <video_folder> <simulation_type>
 """
 
 import subprocess
-from config import NETWORK_INTERFACE, STREAMING_PORT, STREAMING_URL
+from config import NETWORK_INTERFACE, STREAMING_PORT, STREAMING_URL, STREAMING_HOST
 import signal
 import sys
 import simulations
@@ -44,13 +44,16 @@ def run_simulation(videos, simulation_type, video_folder_path):
     # Create an RTSP server
     server = GstRtspServer.RTSPServer.new()
     server.set_service(STREAMING_PORT)
+    server.set_address(STREAMING_HOST)
 
     # Create a default media factory that will create a pipeline for a URI.
     factory = GstRtspServer.RTSPMediaFactory.new()
 
     # Perform the operations for the specified simulation type
     print(f"Running {simulation_type} simulation...")
+    i = 0
     for video_file in videos:
+        i += 1
         launch_string = getattr(simulations, simulation_type)(video_file)
         factory = GstRtspServer.RTSPMediaFactory.new()
         # Set the launch string for the media factory
@@ -60,10 +63,13 @@ def run_simulation(videos, simulation_type, video_folder_path):
 
         # Attach the factory to the streaming path for the video file
         mounts = server.get_mount_points()
-        mounts.add_factory("/" + os.path.basename(video_file), factory)
-
-        # Print all the streams available
-        print(f"Stream available at {STREAMING_URL}{os.path.basename(video_file)}")
+        if "ocr" in video_file:
+            i -= 1
+            mounts.add_factory(f"/ocr", factory)
+            print(f"Stream available at {STREAMING_URL}ocr")
+        else:
+            mounts.add_factory(f"/{i}", factory)
+            print(f"Stream available at {STREAMING_URL}{i}")
 
     # Start the server
     server.attach(None)

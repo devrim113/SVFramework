@@ -20,7 +20,7 @@ def normal(video_file):
     Returns:
         str: The GStreamer launch string for the normal simulation.
     """
-    return f"( filesrc location=./{video_file} ! decodebin ! x264enc ! rtph264pay name=pay0 pt=96 )"
+    return f"( filesrc location=./{video_file} ! tsdemux ! queue ! h265parse ! rtph265pay name=pay0 pt=96 )"
 
 
 def low_bitrate(video_file):
