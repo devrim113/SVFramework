@@ -92,8 +92,6 @@ def run_simulation(videos, simulation_type, video_folder_path):
     # Handle SIGINT for stopping the server
     signal.signal(signal.SIGINT, handle_sigint)
 
-    with open("simulator.log", "w") as file:
-        file.write("Simulator is ready")
     loop.run()
 
 
