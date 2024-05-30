@@ -1,23 +1,18 @@
 #! /usr/bin/env python3
 """
-This is the main script for running validations on the simulated RTSP streams.
-The script takes a streaming URL as an argument and validates the stream by checking its accessibility using ffprobe.
-Usage: python validator.py <streaming_url>
+This is the main script for running validations on video files and their logs.
+The script takes a video file path and corresponding log file paths as arguments and validates them.
+Usage: python validator.py <original_video_file_path> <simulated_video_file_path> <original_log_file_path> <simulated_log_file_path>
 """
 
+import os
 import sys
 import validations
 
-if __name__ == "__main__":
-    # Get the URL from the command line arguments
-    if len(sys.argv) > 1:
-        streaming_url = sys.argv[1]
-    else:
-        print("Please provide the streaming URL as an argument.")
-        print("Usage: python validator.py <streaming_url>")
-        sys.exit(1)
 
-    # Collect all validatable functions
+def validate_video_files_and_logs(
+    original_video, simulated_video, original_log, simulated_log
+):
     validation_types = sorted(
         [
             func
@@ -27,14 +22,18 @@ if __name__ == "__main__":
         key=lambda x: getattr(validations, x).__code__.co_firstlineno,
     )
 
-    # Count the number of validation errors
     error_count = 0
     failed_validations = []
 
-    # Execute each validation function and check its result
     for func in validation_types:
         try:
-            result = getattr(validations, func)(streaming_url)
+            if func in ["validate_ocr_similarity", "validate_overlay_similarity"]:
+                result = getattr(validations, func)(original_log, simulated_log)
+            elif func == "validate_vmaf":
+                result = getattr(validations, func)(original_video, simulated_video)
+            else:
+                result = getattr(validations, func)(simulated_video)
+
             if not result:
                 failed_validations.append(func)
                 error_count += 1
@@ -48,3 +47,31 @@ if __name__ == "__main__":
         print(
             f"\033[31mErrors found: {error_count}. Failed validations: {', '.join(failed_validations)}\033[0m"
         )
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 5:
+        print(
+            "Please provide the original and simulated video file paths, and original and simulated log file paths as arguments."
+        )
+        print(
+            "Usage: python validator.py <original_video_file_path> <simulated_video_file_path> <original_log_file_path> <simulated_log_file_path>"
+        )
+        sys.exit(1)
+
+    original_video_file_path = sys.argv[1]
+    simulated_video_file_path = sys.argv[2]
+    original_log_file_path = sys.argv[3]
+    simulated_log_file_path = sys.argv[4]
+
+    validate_video_files_and_logs(
+        original_video_file_path,
+        simulated_video_file_path,
+        original_log_file_path,
+        simulated_log_file_path,
+    )
+
+    # Delete all .y4m files in the current directory
+    for file in os.listdir():
+        if file.endswith(".y4m") or file.endswith(".yuv") or file.endswith(".xml"):
+            os.remove(file)

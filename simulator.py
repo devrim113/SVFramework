@@ -65,7 +65,7 @@ def run_simulation(videos, simulation_type, video_folder_path):
         mounts = server.get_mount_points()
         if "ocr" in video_file:
             i -= 1
-            mounts.add_factory(f"/ocr", factory)
+            mounts.add_factory("/ocr", factory)
             print(f"Stream available at {STREAMING_URL}ocr")
         else:
             mounts.add_factory(f"/{i}", factory)
