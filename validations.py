@@ -1,3 +1,10 @@
+#! /usr/bin/env python3
+"""
+This is the validations module that contains functions for validating video files and logs.
+This module is used by the validator.py script to validate video files and their logs.
+It should not be run directly but imported by the validator.py script.
+"""
+
 import subprocess
 import cv2
 import numpy as np
@@ -113,7 +120,7 @@ def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
-            check=True
+            check=True,
         )
         if conversion_result.returncode != 0:
             __print_failure("Failed to convert original video to Y4M format.")
@@ -122,11 +129,19 @@ def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
         # Convert simulated video to Y4M format
         simulated_y4m = "simulated_video.y4m"
         conversion_result = subprocess.run(
-            ["ffmpeg", "-y", "-i", simulated_video, "-pix_fmt", "yuv420p", simulated_y4m],
+            [
+                "ffmpeg",
+                "-y",
+                "-i",
+                simulated_video,
+                "-pix_fmt",
+                "yuv420p",
+                simulated_y4m,
+            ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
-            check=True
+            check=True,
         )
         if conversion_result.returncode != 0:
             __print_failure("Failed to convert simulated video to Y4M format.")
@@ -140,10 +155,21 @@ def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
         # Run the VMAF tool and capture the output
         output_xml = "output.xml"
         result = subprocess.run(
-            ["vmaf", "-r", original_y4m, "-d", simulated_y4m, "-q", "--threads", str(os.cpu_count()), "-o", output_xml],
+            [
+                "vmaf",
+                "-r",
+                original_y4m,
+                "-d",
+                simulated_y4m,
+                "-q",
+                "--threads",
+                str(os.cpu_count()),
+                "-o",
+                output_xml,
+            ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            universal_newlines=True
+            universal_newlines=True,
         )
 
         # Check for VMAF score in the output XML file
@@ -151,12 +177,16 @@ def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
             try:
                 tree = ET.parse(output_xml)
                 root = tree.getroot()
-                vmaf_score = float(root.find(".//pooled_metrics/metric[@name='vmaf']").get('mean'))
+                vmaf_score = float(
+                    root.find(".//pooled_metrics/metric[@name='vmaf']").get("mean")
+                )
                 if vmaf_score >= min_vmaf_score:
                     __print_success(f"Success! VMAF score: {vmaf_score}")
                     return True
                 else:
-                    __print_failure(f"Failed! VMAF score: {vmaf_score} is below the minimum {min_vmaf_score}")
+                    __print_failure(
+                        f"Failed! VMAF score: {vmaf_score} is below the minimum {min_vmaf_score}"
+                    )
                     return False
             except Exception as e:
                 __print_failure(f"Failed to parse VMAF score: {e}")
