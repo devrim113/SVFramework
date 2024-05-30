@@ -94,16 +94,17 @@ def validate_qos_metrics(simulated_video):
         return False
 
 
-def validate_vmaf(original_video, simulated_video):
+def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
     """
     Validate video quality using VMAF.
     Args:
         original_video (str): Path to the original video file.
         simulated_video (str): Path to the simulated video file.
+        min_vmaf_score (int): Minimum acceptable VMAF score.
     Returns:
-        bool: True if VMAF score is within acceptable thresholds, False otherwise.
+        bool: True if VMAF score is above the acceptable minimum, False otherwise.
     """
-    __print_test("Validating VMAF score")
+    __print_test(f"Validating VMAF score (>= {min_vmaf_score})")
     try:
         # Convert original video to Y4M format
         original_y4m = "original_video.y4m"
@@ -112,7 +113,7 @@ def validate_vmaf(original_video, simulated_video):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
-            check=True,
+            check=True
         )
         if conversion_result.returncode != 0:
             __print_failure("Failed to convert original video to Y4M format.")
@@ -121,19 +122,11 @@ def validate_vmaf(original_video, simulated_video):
         # Convert simulated video to Y4M format
         simulated_y4m = "simulated_video.y4m"
         conversion_result = subprocess.run(
-            [
-                "ffmpeg",
-                "-y",
-                "-i",
-                simulated_video,
-                "-pix_fmt",
-                "yuv420p",
-                simulated_y4m,
-            ],
+            ["ffmpeg", "-y", "-i", simulated_video, "-pix_fmt", "yuv420p", simulated_y4m],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
-            check=True,
+            check=True
         )
         if conversion_result.returncode != 0:
             __print_failure("Failed to convert simulated video to Y4M format.")
@@ -147,21 +140,10 @@ def validate_vmaf(original_video, simulated_video):
         # Run the VMAF tool and capture the output
         output_xml = "output.xml"
         result = subprocess.run(
-            [
-                "vmaf",
-                "-r",
-                original_y4m,
-                "-d",
-                simulated_y4m,
-                "-q",
-                "--threads",
-                str(os.cpu_count()),
-                "-o",
-                output_xml,
-            ],
+            ["vmaf", "-r", original_y4m, "-d", simulated_y4m, "-q", "--threads", str(os.cpu_count()), "-o", output_xml],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            universal_newlines=True,
+            universal_newlines=True
         )
 
         # Check for VMAF score in the output XML file
@@ -169,11 +151,13 @@ def validate_vmaf(original_video, simulated_video):
             try:
                 tree = ET.parse(output_xml)
                 root = tree.getroot()
-                vmaf_score = root.find(".//pooled_metrics/metric[@name='vmaf']").get(
-                    "mean"
-                )
-                __print_success(f"Success! VMAF score: {vmaf_score}")
-                return True
+                vmaf_score = float(root.find(".//pooled_metrics/metric[@name='vmaf']").get('mean'))
+                if vmaf_score >= min_vmaf_score:
+                    __print_success(f"Success! VMAF score: {vmaf_score}")
+                    return True
+                else:
+                    __print_failure(f"Failed! VMAF score: {vmaf_score} is below the minimum {min_vmaf_score}")
+                    return False
             except Exception as e:
                 __print_failure(f"Failed to parse VMAF score: {e}")
                 return False
@@ -259,7 +243,7 @@ def validate_minimum_fps(video_file, min_fps=20):
     Returns:
         bool: True if the video maintains the minimum frame rate, False otherwise.
     """
-    __print_test(f"Validating minimum FPS of {min_fps}")
+    __print_test(f"Validating FPS (>={min_fps})")
 
     try:
         # Use ffprobe to get the frame rate of the video file
@@ -294,7 +278,7 @@ def validate_minimum_fps(video_file, min_fps=20):
             __print_failure(f"Failed! Frame rate check: {fps} < {min_fps}")
             return False
 
-        __print_success(f"Success! Measured FPS: {fps} >= {min_fps}")
+        __print_success(f"Success! Measured FPS: {fps} >= {min_fps}.")
         return True
 
     except Exception as e:
@@ -312,7 +296,7 @@ def validate_minimum_resolution(simulated_video, min_width=1280, min_height=720)
     Returns:
         bool: True if the video maintains the minimum resolution, False otherwise.
     """
-    __print_test(f"Validating minimum resolution of {min_width}x{min_height}")
+    __print_test(f"Validating resolution (>={min_width}x{min_height})")
     try:
         # Open the video file and check its resolution
         cap = cv2.VideoCapture(simulated_video)
@@ -333,7 +317,7 @@ def validate_minimum_resolution(simulated_video, min_width=1280, min_height=720)
             return False
 
         __print_success(
-            f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}"
+            f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}."
         )
         return True
     except Exception as e:
@@ -377,7 +361,7 @@ def validate_bitrate(simulated_video, min_bitrate_kbps=500):
         bitrate_kbps = int(result.stdout.strip()) / 1000
 
         if bitrate_kbps >= min_bitrate_kbps:
-            __print_success(f"Success! Bitrate is {bitrate_kbps} kbps")
+            __print_success(f"Success! Bitrate is {bitrate_kbps} kbps.")
             return True
         else:
             __print_failure(
@@ -433,12 +417,12 @@ def validate_keyframe_interval(simulated_video, max_interval=250):
 
         if max_keyframe_interval <= max_interval:
             __print_success(
-                f"Success! Max keyframe interval is {max_keyframe_interval} frames"
+                f"Success! Max keyframe interval is {max_keyframe_interval} frames."
             )
             return True
         else:
             __print_failure(
-                f"Failed! Max keyframe interval is {max_keyframe_interval} frames, exceeds {max_interval} frames"
+                f"Failed! Max keyframe interval is {max_keyframe_interval} frames, exceeds {max_interval} frames."
             )
             return False
 
@@ -483,7 +467,7 @@ def validate_audio_quality(
         )
 
         if audio_check_result.returncode != 0 or not audio_check_result.stdout.strip():
-            __print_failure("Failed! No audio stream found in the video file")
+            __print_failure("Failed! No audio stream found.")
             return False
 
         # If audio stream exists, check the bitrate and sample rate
@@ -566,11 +550,11 @@ def validate_video_codec(simulated_video, required_codec="h264"):
         codec = result.stdout.strip()
 
         if codec == required_codec:
-            __print_success(f"Success! Video codec is {codec}")
+            __print_success(f"Success! Video codec is {codec}.")
             return True
         else:
             __print_failure(
-                f"Failed! Video codec is {codec}, expected {required_codec}"
+                f"Failed! Video codec is {codec}, expected {required_codec}."
             )
             return False
 
