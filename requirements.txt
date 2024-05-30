@@ -1,7 +1,10 @@
 black==24.3.0
+certifi==2024.2.2
+charset-normalizer==3.3.2
 click==8.1.7
 exceptiongroup==1.2.0
 flake8==7.0.0
+idna==3.7
 iniconfig==2.0.0
 mccabe==0.7.0
 mypy-extensions==1.0.0
@@ -16,5 +19,8 @@ pyflakes==3.2.0
 PyGObject==3.48.1
 pytest==8.1.1
 python-dotenv==1.0.1
+requests==2.31.0
 tomli==2.0.1
 typing_extensions==4.11.0
+urllib3==2.2.1
+websockets==12.0
