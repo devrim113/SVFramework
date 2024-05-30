@@ -389,54 +389,6 @@ def validate_bitrate(simulated_video, min_bitrate_kbps=500):
         __print_failure(f"Error during bitrate validation: {e}")
         return False
 
-    """
-    Validate that the video bitrate is within an acceptable range.
-    Args:
-        simulated_video (str): Path to the simulated video file.
-        min_bitrate_kbps (int): Minimum acceptable bitrate in kbps.
-        max_bitrate_kbps (int): Maximum acceptable bitrate in kbps.
-    Returns:
-        bool: True if the bitrate is within the acceptable range, False otherwise.
-    """
-    __print_test(f"Validating bitrate ({min_bitrate_kbps}-{max_bitrate_kbps} kbps)")
-    try:
-        result = subprocess.run(
-            [
-                "ffprobe",
-                "-v",
-                "error",
-                "-select_streams",
-                "v:0",
-                "-show_entries",
-                "stream=bit_rate",
-                "-of",
-                "default=noprint_wrappers=1:nokey=1",
-                simulated_video,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True,
-        )
-
-        if result.returncode != 0:
-            __print_failure("Error! Could not analyze video file")
-            return False
-
-        bitrate_kbps = int(result.stdout.strip()) / 1000
-
-        if min_bitrate_kbps <= bitrate_kbps <= max_bitrate_kbps:
-            __print_success(f"Success! Bitrate is {bitrate_kbps} kbps")
-            return True
-        else:
-            __print_failure(
-                f"Failed! Bitrate is {bitrate_kbps} kbps, outside the range {min_bitrate_kbps}-{max_bitrate_kbps} kbps"
-            )
-            return False
-
-    except Exception as e:
-        __print_failure(f"Error during bitrate validation: {e}")
-        return False
-
 
 def validate_keyframe_interval(simulated_video, max_interval=250):
     """
@@ -568,61 +520,8 @@ def validate_audio_quality(
             return True
         else:
             __print_failure(
-                f"Failed! Audio bitrate is {bitrate_kbps} kbps and sample rate is {sample_rate_hz} Hz, below required standards"
-            )
-            return False
-
-    except Exception as e:
-        __print_failure(f"Error during audio quality validation: {e}")
-        return False
-
-    """
-    Validate the audio quality by checking the bitrate and sample rate.
-    Args:
-        simulated_video (str): Path to the simulated video file.
-        min_bitrate_kbps (int): Minimum acceptable audio bitrate in kbps.
-        min_sample_rate_hz (int): Minimum acceptable audio sample rate in Hz.
-    Returns:
-        bool: True if the audio quality meets the required standards, False otherwise.
-    """
-    __print_test(
-        f"Validating audio quality (>= {min_bitrate_kbps} kbps, >= {min_sample_rate_hz} Hz)"
-    )
-    try:
-        result = subprocess.run(
-            [
-                "ffprobe",
-                "-v",
-                "error",
-                "-select_streams",
-                "a:0",
-                "-show_entries",
-                "stream=bit_rate,sample_rate",
-                "-of",
-                "default=noprint_wrappers=1:nokey=1",
-                simulated_video,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True,
-        )
-
-        if result.returncode != 0:
-            __print_failure("Error! Could not analyze audio stream")
-            return False
-
-        lines = result.stdout.strip().split("\n")
-        bitrate_kbps = int(lines[0]) / 1000
-        sample_rate_hz = int(lines[1])
-
-        if bitrate_kbps >= min_bitrate_kbps and sample_rate_hz >= min_sample_rate_hz:
-            __print_success(
-                f"Success! Audio bitrate is {bitrate_kbps} kbps and sample rate is {sample_rate_hz} Hz"
-            )
-            return True
-        else:
-            __print_failure(
-                f"Failed! Audio bitrate is {bitrate_kbps} kbps and sample rate is {sample_rate_hz} Hz, below required standards"
+                f"Failed! Audio bitrate is {bitrate_kbps} kbps and sample rate is "
+                "{sample_rate_hz} Hz, below required standards"
             )
             return False
 

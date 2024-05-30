@@ -2,7 +2,8 @@
 """
 This is the main script for running validations on video files and their logs.
 The script takes a video file path and corresponding log file paths as arguments and validates them.
-Usage: python validator.py <original_video_file_path> <simulated_video_file_path> <original_log_file_path> <simulated_log_file_path>
+Usage: python validator.py <original_video_file_path> \
+    <simulated_video_file_path> <original_log_file_path> <simulated_log_file_path>
 """
 
 import os
@@ -52,10 +53,12 @@ def validate_video_files_and_logs(
 if __name__ == "__main__":
     if len(sys.argv) != 5:
         print(
-            "Please provide the original and simulated video file paths, and original and simulated log file paths as arguments."
+            "Please provide the original and simulated video file paths, "
+            "and original and simulated log file paths as arguments."
         )
         print(
-            "Usage: python validator.py <original_video_file_path> <simulated_video_file_path> <original_log_file_path> <simulated_log_file_path>"
+            "Usage: python validator.py <original_video_file_path> "
+            "<simulated_video_file_path> <original_log_file_path> <simulated_log_file_path>"
         )
         sys.exit(1)
 
