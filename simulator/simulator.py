@@ -8,7 +8,12 @@ Usage: python simulator.py <video_folder> <simulation_type>
 """
 
 import subprocess
-from config import NETWORK_INTERFACE, STREAMING_PORT, STREAMING_URL, STREAMING_HOST
+from config import (
+    NETWORK_INTERFACE,
+    STREAMING_PORT,
+    STREAMING_URL,
+    STREAMING_HOST,
+)
 import signal
 import sys
 import simulations
@@ -149,6 +154,8 @@ if __name__ == "__main__":
     # Get the simulation type from the command line arguments
     if len(sys.argv) > 2:
         video_folder = sys.argv[1]
+        # video_folder = os.path.abspath(video_folder)
+        # print(video_folder)
 
         # Check if the video_folder exists, else throw an error.
         if not os.path.exists(video_folder):
