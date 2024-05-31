@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 
+
 def reverse_brightness(video_file):
     """
     Reverse brightness change by applying the inverse brightness adjustment.
@@ -11,17 +12,27 @@ def reverse_brightness(video_file):
         str: The path to the brightness-reversed video.
     """
     # Placeholder value for brightness factor; in practice, this should be derived or passed
-    brightness_factor = 0.35  # Example value; replace with actual factor used in manipulation
+    brightness_factor = (
+        0.35  # Example value; replace with actual factor used in manipulation
+    )
 
     # Calculate the reversed brightness factor
     reversed_brightness_factor = -brightness_factor
 
     # Generate the output file name
-    output_video = video_file.rsplit(".", 1)[0] + "_reversed." + video_file.rsplit(".", 1)[1]
+    output_video = (
+        video_file.rsplit(".", 1)[0] + "_reversed." + video_file.rsplit(".", 1)[1]
+    )
 
     # FFmpeg command to reverse the brightness adjustment
     command = [
-        "ffmpeg", "-i", video_file, "-vf", f"eq=brightness={reversed_brightness_factor}", output_video, "-y"
+        "ffmpeg",
+        "-i",
+        video_file,
+        "-vf",
+        f"eq=brightness={reversed_brightness_factor}",
+        output_video,
+        "-y",
     ]
 
     # Run the command and capture the output
@@ -29,6 +40,7 @@ def reverse_brightness(video_file):
 
     print(f"Reversed brightness video file created: {output_video}")
     return output_video
+
 
 if __name__ == "__main__":
     # Define available simulation types
@@ -53,11 +65,15 @@ if __name__ == "__main__":
                 sys.exit(1)
         else:
             print("Invalid simulation type. Please specify a valid simulation.")
-            print("Usage: python reverse_simulation.py <manipulated_video> <simulation_type>")
+            print(
+                "Usage: python reverse_simulation.py <manipulated_video> <simulation_type>"
+            )
             print("Available simulations: " + ", ".join(simulation_types))
             sys.exit(1)
     else:
         print("Please specify a manipulated video and a simulation type to reverse.")
-        print("Usage: python reverse_simulation.py <manipulated_video> <simulation_type>")
+        print(
+            "Usage: python reverse_simulation.py <manipulated_video> <simulation_type>"
+        )
         print("Available simulations: " + ", ".join(simulation_types))
         sys.exit(1)
