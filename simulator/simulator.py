@@ -57,7 +57,7 @@ def run_simulation(videos, simulation_type, video_folder_path):
     # Perform the operations for the specified simulation type
     print(f"Running {simulation_type} simulation...")
     i = 0
-    for video_file in videos:
+    for video_file in sorted(videos):
         i += 1
         launch_string = getattr(simulations, simulation_type)(video_file)
         factory = GstRtspServer.RTSPMediaFactory.new()
@@ -97,6 +97,7 @@ def run_simulation(videos, simulation_type, video_folder_path):
     # Handle SIGINT for stopping the server
     signal.signal(signal.SIGINT, handle_sigint)
 
+    print("RTSP server running...")
     loop.run()
 
 

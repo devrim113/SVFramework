@@ -313,9 +313,6 @@ def audio_sync(video_file, audio_delay_ms="500"):
     )
 
 
-# ------------------------- Array Camera Simulations -------------------------
-
-
 def hardware_failure(video_file):
     """
     Simulate a hardware failure in an array camera by streaming a video
@@ -353,9 +350,6 @@ def camera_delay(video_file):
         )
     else:
         return normal(video_file)
-
-
-# ------------------------- OCR Simulations -------------------------
 
 
 def low_resolution(video_file, scale_factor=0.2):
