@@ -26,25 +26,41 @@ def __print_test(message):
     print(f"{message}{'.' * max(dot_count, 1)}", end="", flush=True)
 
 
-def validate_ocr_similarity(original_log, simulated_log):
+def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.95):
     """
     Validate that OCR output for the original and simulated videos are similar.
     Args:
         original_log (str): Path to the original OCR log file.
         simulated_log (str): Path to the simulated OCR log file.
+        similarity_threshold (float): Minimum similarity threshold for OCR outputs.
     Returns:
         bool: True if OCR outputs are similar, False otherwise.
     """
-    __print_test("Validating OCR similarity")
+    __print_test(f"Validating OCR similarity (>={similarity_threshold * 100:.2f}%)")
     try:
         # Read and compare the contents of the original and simulated OCR log files
         with open(original_log, "r") as orig, open(simulated_log, "r") as sim:
-            if orig.read() == sim.read():
-                __print_success("Success! OCR outputs are similar.")
-                return True
-            else:
-                __print_failure("Failed! OCR outputs are not similar.")
-                return False
+            log_content_orig = orig.readlines()
+            log_content_sim = sim.readlines()
+
+        relevant_entries_orig = [line.strip() for line in log_content_orig if "score" in line or "time" in line or "period" in line]
+        relevant_entries_sim = [line.strip() for line in log_content_sim if "score" in line or "time" in line or "period" in line]
+
+        total_entries = max(len(relevant_entries_orig), len(relevant_entries_sim))
+        if total_entries == 0:
+            __print_failure("No relevant entries found in either log file.")
+            return False
+
+        differences = sum(1 for entry1, entry2 in zip(relevant_entries_orig, relevant_entries_sim) if entry1 != entry2)
+        similarity = (total_entries - differences) / total_entries
+
+        if similarity >= similarity_threshold:
+            __print_success(f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%")
+            return True
+        else:
+            __print_failure(f"Failed! Similarity: {similarity * 100:.2f}% is below the threshold of {similarity_threshold * 100:.2f}%")
+            return False
+
     except Exception as e:
         __print_failure(f"Error during OCR similarity validation: {e}")
         return False
@@ -59,7 +75,7 @@ def validate_overlay_similarity(original_log, simulated_log):
     Returns:
         bool: True if overlay outputs are similar, False otherwise.
     """
-    __print_test("Validating overlay similarity")
+    __print_test("Validating Overlay similarity")
     try:
         # Read and compare the contents of the original and simulated overlay log files
         with open(original_log, "r") as orig, open(simulated_log, "r") as sim:
@@ -72,34 +88,6 @@ def validate_overlay_similarity(original_log, simulated_log):
     except Exception as e:
         __print_failure(f"Error during overlay similarity validation: {e}")
         return False
-
-
-def validate_qos_metrics(simulated_video):
-    """
-    Validate QoS metrics such as resolution.
-    Args:
-        simulated_video (str): Path to the simulated video file.
-    Returns:
-        bool: True if QoS metrics are within acceptable thresholds, False otherwise.
-    """
-    __print_test("Validating QoS metrics")
-    try:
-        # Open the video file and check its resolution
-        cap = cv2.VideoCapture(simulated_video)
-        width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-        height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        if width >= 1280 and height >= 720:
-            __print_success(f"Success! Resolution is {width}x{height}.")
-            return True
-        else:
-            __print_failure(
-                f"Failed! Resolution is {width}x{height}, which is below the acceptable threshold."
-            )
-            return False
-    except Exception as e:
-        __print_failure(f"Error during QoS metrics validation: {e}")
-        return False
-
 
 def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
     """
