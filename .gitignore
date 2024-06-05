@@ -164,3 +164,7 @@ cython_debug/
 videos/
 videos2/
 temp_video/
+.ocr_logs/
+.video_logs/
+.video_folder/
+overlay_image.*
