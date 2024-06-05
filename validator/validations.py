@@ -43,22 +43,39 @@ def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.
             log_content_orig = orig.readlines()
             log_content_sim = sim.readlines()
 
-        relevant_entries_orig = [line.strip() for line in log_content_orig if "score" in line or "time" in line or "period" in line]
-        relevant_entries_sim = [line.strip() for line in log_content_sim if "score" in line or "time" in line or "period" in line]
+        relevant_entries_orig = [
+            line.strip()
+            for line in log_content_orig
+            if "score" in line or "time" in line or "period" in line
+        ]
+        relevant_entries_sim = [
+            line.strip()
+            for line in log_content_sim
+            if "score" in line or "time" in line or "period" in line
+        ]
 
         total_entries = max(len(relevant_entries_orig), len(relevant_entries_sim))
         if total_entries == 0:
             __print_failure("No relevant entries found in either log file.")
             return False
 
-        differences = sum(1 for entry1, entry2 in zip(relevant_entries_orig, relevant_entries_sim) if entry1 != entry2)
+        differences = sum(
+            1
+            for entry1, entry2 in zip(relevant_entries_orig, relevant_entries_sim)
+            if entry1 != entry2
+        )
         similarity = (total_entries - differences) / total_entries
 
         if similarity >= similarity_threshold:
-            __print_success(f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%")
+            __print_success(
+                f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%"
+            )
             return True
         else:
-            __print_failure(f"Failed! Similarity: {similarity * 100:.2f}% is below the threshold of {similarity_threshold * 100:.2f}%")
+            __print_failure(
+                f"Failed! Similarity: {similarity * 100:.2f}% is below the threshold of"
+                "{similarity_threshold * 100:.2f}%"
+            )
             return False
 
     except Exception as e:
@@ -88,6 +105,7 @@ def validate_overlay_similarity(original_log, simulated_log):
     except Exception as e:
         __print_failure(f"Error during overlay similarity validation: {e}")
         return False
+
 
 def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
     """

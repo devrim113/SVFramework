@@ -2,7 +2,8 @@
 """
 This is the main script for running validations on video files and their logs.
 The script takes a video file path and corresponding log file paths as arguments and validates them.
-Usage: python validator.py <original_video_file_path> <simulated_video_file_path> <original_log_file_path> <simulated_log_file_path> <vmaf_option>
+Usage: python validator.py <original_video_file_path> <simulated_video_file_path> <original_log_file_path>
+<simulated_log_file_path> <vmaf_option>
 """
 
 import os
@@ -22,7 +23,16 @@ def has_audio_stream(video_file):
     """
     try:
         result = subprocess.run(
-            ["ffprobe", "-i", video_file, "-show_streams", "-select_streams", "a", "-loglevel", "error"],
+            [
+                "ffprobe",
+                "-i",
+                video_file,
+                "-show_streams",
+                "-select_streams",
+                "a",
+                "-loglevel",
+                "error",
+            ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
@@ -33,7 +43,9 @@ def has_audio_stream(video_file):
         return False
 
 
-def validate_video_files_and_logs(original_video, simulated_video, original_log, simulated_log, vmaf_option):
+def validate_video_files_and_logs(
+    original_video, simulated_video, original_log, simulated_log, vmaf_option
+):
     validation_types = sorted(
         [
             func
@@ -63,7 +75,9 @@ def validate_video_files_and_logs(original_video, simulated_video, original_log,
                 if simulated_video_has_audio:
                     result = getattr(validations, func)(simulated_video)
                 else:
-                    print(f"\033[33mSkipping {func} - no audio stream found in the simulated video.\033[0m")
+                    print(
+                        f"\033[33mSkipping {func} - no audio stream found in the simulated video.\033[0m"
+                    )
                     continue
             else:
                 result = getattr(validations, func)(simulated_video)
