@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 This is the main script for running validations on video files and their logs.
-The script takes a video file path and corresponding log file paths as arguments and validates them.
-Usage: python validator.py <original_video_file_path> <simulated_video_file_path> <original_log_file_path>
-<simulated_log_file_path> <vmaf_option>
+The script takes a folder containing video files, a folder containing video logs, a folder containing OCR logs,
+and a VMAF option as arguments, and validates them.
+Usage: python validator.py <video_folder> <video_logs> <ocr_logs> <vmaf_option>
 """
 
 import os
@@ -44,7 +44,7 @@ def has_audio_stream(video_file):
 
 
 def validate_video_files_and_logs(
-    original_video, simulated_video, original_log, simulated_log, vmaf_option
+    original_video, simulated_video, video_logs, ocr_logs, original_overlay, vmaf_option
 ):
     validation_types = sorted(
         [
@@ -63,11 +63,17 @@ def validate_video_files_and_logs(
 
     for func in validation_types:
         try:
-            if func in ["validate_ocr_similarity", "validate_overlay_similarity"]:
+            if func == "validate_ocr_similarity":
+                original_log = os.path.join(ocr_logs, "original_ocr.log")
+                simulated_log = os.path.join(ocr_logs, "simulated_ocr.log")
+                result = getattr(validations, func)(original_log, simulated_log)
+            elif func == "validate_error_similarity":
+                original_log = os.path.join(video_logs, "original_video.log")
+                simulated_log = os.path.join(video_logs, "simulated_video.log")
                 result = getattr(validations, func)(original_log, simulated_log)
             elif func == "validate_vmaf":
                 if vmaf_option == 0:
-                    print(f"\033[33mSkipping {func} - VMAF validation disabled.\033[0m")
+                    print(f"\033[33mSkipping {func} - VMAF validation disabled by argument in run-command. Change the 0 to 1 to activate.\033[0m")
                     continue
                 else:
                     result = getattr(validations, func)(original_video, simulated_video)
@@ -79,6 +85,8 @@ def validate_video_files_and_logs(
                         f"\033[33mSkipping {func} - no audio stream found in the simulated video.\033[0m"
                     )
                     continue
+            elif func == "validate_overlay_similarity":
+                result = getattr(validations, func)(original_overlay, simulated_video)
             else:
                 result = getattr(validations, func)(simulated_video)
 
@@ -100,28 +108,36 @@ def validate_video_files_and_logs(
 if __name__ == "__main__":
     if len(sys.argv) != 6:
         print(
-            "Please provide the original and simulated video file paths, "
-            "original and simulated log file paths, and the VMAF option as arguments."
+            "Please provide the video folder, video logs folder, OCR logs folder, and the VMAF option as arguments."
         )
         print(
-            "Usage: python validator.py <original_video_file_path> "
-            "<simulated_video_file_path> <original_log_file_path> <simulated_log_file_path> <vmaf_option (0, 1)>"
+            "Usage: python validator.py <video_folder> <video_logs> <ocr_logs> <overlay_image> <vmaf_option (0, 1)>"
         )
         sys.exit(1)
 
-    original_video_file_path = sys.argv[1]
-    simulated_video_file_path = sys.argv[2]
-    original_log_file_path = sys.argv[3]
-    simulated_log_file_path = sys.argv[4]
+    video_folder = sys.argv[1]
+    video_logs_folder = sys.argv[2]
+    ocr_logs_folder = sys.argv[3]
+    overlay_image = sys.argv[4]
     vmaf_option = int(sys.argv[5])
+
+    # Get the paths of the two videos in the video folder
+    video_files = [os.path.join(video_folder, f) for f in os.listdir(video_folder) if f.endswith((".mp4", ".mkv", ".avi"))]
+    if len(video_files) != 2:
+        print("The video folder must contain exactly two video files.")
+        sys.exit(1)
+
+    original_video_file_path = video_files[0]
+    simulated_video_file_path = video_files[1]
 
     start_time = time.time()
 
     validate_video_files_and_logs(
         original_video_file_path,
         simulated_video_file_path,
-        original_log_file_path,
-        simulated_log_file_path,
+        video_logs_folder,
+        ocr_logs_folder,
+        overlay_image,
         vmaf_option,
     )
 

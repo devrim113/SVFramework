@@ -36,7 +36,7 @@ def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.
     Returns:
         bool: True if OCR outputs are similar, False otherwise.
     """
-    __print_test(f"Validating OCR similarity (>={similarity_threshold * 100:.2f}%)")
+    __print_test(f"Validating OCR similarity (>= {similarity_threshold * 100:.2f}%)")
     try:
         # Read and compare the contents of the original and simulated OCR log files
         with open(original_log, "r") as orig, open(simulated_log, "r") as sim:
@@ -83,25 +83,86 @@ def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.
         return False
 
 
-def validate_overlay_similarity(original_log, simulated_log):
+def validate_overlay_similarity(original_overlay, simulated_video, frame_skip=10, match_threshold=0.2, consecutive_matches_needed=0):
     """
-    Validate that overlay model output for the original and simulated videos are similar.
+    Validate that overlay image is present in the simulated video.
     Args:
-        original_log (str): Path to the original overlay log file.
-        simulated_log (str): Path to the simulated overlay log file.
+        original_overlay (str): Path to the original overlay image file.
+        simulated_video (str): Path to the simulated video file.
+        frame_skip (int): Number of frames to skip between checks.
+        match_threshold (float): Minimum normalized matching score to consider a match.
+        consecutive_matches_needed (int): Number of consecutive frames where the overlay should be found.
     Returns:
-        bool: True if overlay outputs are similar, False otherwise.
+        bool: True if overlay image is present in the simulated video, False otherwise.
     """
-    __print_test("Validating Overlay similarity")
+    __print_test("Validating Overlay Image in Simulated Video")
     try:
-        # Read and compare the contents of the original and simulated overlay log files
-        with open(original_log, "r") as orig, open(simulated_log, "r") as sim:
-            if orig.read() == sim.read():
-                __print_success("Success! Overlay outputs are similar.")
-                return True
+        # Open the video file and check for the presence of the overlay image
+        cap = cv2.VideoCapture(simulated_video)
+        if not cap.isOpened():
+            __print_failure("Error! Could not open video file")
+            return False
+
+        # Read the overlay image and convert to grayscale
+        overlay = cv2.imread(original_overlay, cv2.IMREAD_UNCHANGED)
+        if overlay is None:
+            __print_failure("Error! Could not read overlay image file.")
+            return False
+
+        # If the overlay has an alpha channel (transparency), create a mask and convert to grayscale
+        if overlay.shape[2] == 4:  # Overlay has an alpha channel
+            overlay_gray = cv2.cvtColor(overlay[:, :, :3], cv2.COLOR_BGR2GRAY)
+            alpha_channel = overlay[:, :, 3]
+            _, mask = cv2.threshold(alpha_channel, 1, 255, cv2.THRESH_BINARY)
+        else:
+            overlay_gray = cv2.cvtColor(overlay, cv2.COLOR_BGR2GRAY)
+            mask = None
+
+        # Counter for consecutive matches
+        consecutive_matches = 0
+
+        frame_count = 0
+        found = False
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break  # End of video
+
+            frame_count += 1
+
+            if frame_count % frame_skip != 0:
+                continue  # Skip frames
+
+            # Convert the frame to grayscale
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            # Perform template matching
+            if mask is not None:
+                res = cv2.matchTemplate(gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED, mask=mask)
             else:
-                __print_failure("Failed! Overlay outputs are not similar.")
-                return False
+                res = cv2.matchTemplate(gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED)
+
+            _, max_val, _, max_loc = cv2.minMaxLoc(res)
+
+            # Check if match is above the threshold
+            if max_val >= match_threshold:
+                consecutive_matches += 1
+                if consecutive_matches >= consecutive_matches_needed:
+                    found = True
+                    break
+            else:
+                consecutive_matches = 0
+
+        cap.release()
+
+        if found:
+            __print_success("Success! Overlay image is present in the simulated video.")
+            return True
+        else:
+            __print_failure("Failed! Overlay image is not present in the simulated video.")
+            return False
+
     except Exception as e:
         __print_failure(f"Error during overlay similarity validation: {e}")
         return False
@@ -596,4 +657,50 @@ def validate_video_codec(simulated_video, required_codec="h264"):
 
     except Exception as e:
         __print_failure(f"Error during video codec validation: {e}")
+        return False
+
+
+def validate_error_similarity(original_log, simulated_log, similarity_threshold=0.95):
+    """
+    Validate that error logs for the original and simulated videos are similar.
+    Args:
+        original_log (str): Path to the original error log file.
+        simulated_log (str): Path to the simulated error log file.
+        similarity_threshold (float): Minimum similarity threshold for error logs.
+    Returns:
+        bool: True if error logs are similar, False otherwise.
+    """
+    __print_test("Validating error similarity")
+    try:
+        with open(original_log, 'r') as file:
+            original_lines = [line for line in file if 'error' in line.lower()]
+
+        with open(simulated_log, 'r') as file:
+            simulated_lines = [line for line in file if 'error' in line.lower()]
+
+        total_entries = max(len(original_lines), len(simulated_lines))
+        if total_entries == 0:
+            __print_success("No error entries found in either log file.")
+            return True
+
+        differences = sum(
+            1
+            for entry1, entry2 in zip(original_lines, simulated_lines)
+            if entry1 != entry2
+        )
+        similarity = (total_entries - differences) / total_entries
+
+        if similarity >= similarity_threshold:
+            __print_success(
+                f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%"
+            )
+            return True
+        else:
+            __print_failure(
+                f"Failed! Similarity: {similarity * 100:.2f}% is below the threshold of"
+                "{similarity_threshold * 100:.2f}%"
+            )
+            return False
+    except Exception as e:
+        __print_failure(f"Error during error similarity validation: {e}")
         return False
