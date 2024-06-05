@@ -83,7 +83,13 @@ def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.
         return False
 
 
-def validate_overlay_similarity(original_overlay, simulated_video, frame_skip=10, match_threshold=0.2, consecutive_matches_needed=0):
+def validate_overlay_similarity(
+    original_overlay,
+    simulated_video,
+    frame_skip=10,
+    match_threshold=0.2,
+    consecutive_matches_needed=0,
+):
     """
     Validate that overlay image is present in the simulated video.
     Args:
@@ -139,7 +145,9 @@ def validate_overlay_similarity(original_overlay, simulated_video, frame_skip=10
 
             # Perform template matching
             if mask is not None:
-                res = cv2.matchTemplate(gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED, mask=mask)
+                res = cv2.matchTemplate(
+                    gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED, mask=mask
+                )
             else:
                 res = cv2.matchTemplate(gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED)
 
@@ -160,7 +168,9 @@ def validate_overlay_similarity(original_overlay, simulated_video, frame_skip=10
             __print_success("Success! Overlay image is present in the simulated video.")
             return True
         else:
-            __print_failure("Failed! Overlay image is not present in the simulated video.")
+            __print_failure(
+                "Failed! Overlay image is not present in the simulated video."
+            )
             return False
 
     except Exception as e:
@@ -672,11 +682,11 @@ def validate_error_similarity(original_log, simulated_log, similarity_threshold=
     """
     __print_test("Validating error similarity")
     try:
-        with open(original_log, 'r') as file:
-            original_lines = [line for line in file if 'error' in line.lower()]
+        with open(original_log, "r") as file:
+            original_lines = [line for line in file if "error" in line.lower()]
 
-        with open(simulated_log, 'r') as file:
-            simulated_lines = [line for line in file if 'error' in line.lower()]
+        with open(simulated_log, "r") as file:
+            simulated_lines = [line for line in file if "error" in line.lower()]
 
         total_entries = max(len(original_lines), len(simulated_lines))
         if total_entries == 0:

@@ -73,7 +73,10 @@ def validate_video_files_and_logs(
                 result = getattr(validations, func)(original_log, simulated_log)
             elif func == "validate_vmaf":
                 if vmaf_option == 0:
-                    print(f"\033[33mSkipping {func} - VMAF validation disabled by argument in run-command. Change the 0 to 1 to activate.\033[0m")
+                    print(
+                        f"\033[33mSkipping {func} - VMAF validation disabled by argument in run-command."
+                        "Change the 0 to 1 to activate.\033[0m"
+                    )
                     continue
                 else:
                     result = getattr(validations, func)(original_video, simulated_video)
@@ -122,7 +125,11 @@ if __name__ == "__main__":
     vmaf_option = int(sys.argv[5])
 
     # Get the paths of the two videos in the video folder
-    video_files = [os.path.join(video_folder, f) for f in os.listdir(video_folder) if f.endswith((".mp4", ".mkv", ".avi"))]
+    video_files = [
+        os.path.join(video_folder, f)
+        for f in os.listdir(video_folder)
+        if f.endswith((".mp4", ".mkv", ".avi"))
+    ]
     if len(video_files) != 2:
         print("The video folder must contain exactly two video files.")
         sys.exit(1)
