@@ -23,17 +23,6 @@ def normal(video_file):
     return f"( filesrc location=./{video_file} ! tsdemux ! queue ! h265parse ! rtph265pay name=pay0 pt=96 )"
 
 
-def low_bitrate(video_file):
-    """
-    Simulate a video stream with low bitrate encoding settings.
-    Args:
-        video_file: The video file to stream.
-    Returns:
-        str: The GStreamer launch string for the low bitrate simulation.
-    """
-    return f"( filesrc location=./{video_file} ! decodebin ! x264enc bitrate=50 ! rtph264pay name=pay0 pt=96 )"
-
-
 # ------------------------- Network Simulations -------------------------
 
 
