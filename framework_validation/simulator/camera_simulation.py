@@ -58,11 +58,13 @@ def validate_low_resolution(original_video_file, simulated_video_file):
 
         if simulated_height >= original_height or simulated_width >= original_width:
             __print_failure(
-                f"Failed! Simulated resolution: {simulated_width}x{simulated_height} >= Original resolution: {original_width}x{original_height}"
+                f"Failed! Simulated resolution: {simulated_width}x{simulated_height} >="
+                "Original resolution: {original_width}x{original_height}"
             )
             return False
         __print_success(
-            f"Success! Simulated resolution: {simulated_width}x{simulated_height} <= Original resolution: {original_width}x{original_height}"
+            f"Success! Simulated resolution: {simulated_width}x{simulated_height} <="
+            "Original resolution: {original_width}x{original_height}"
         )
         return True
     except Exception as e:
@@ -80,7 +82,8 @@ def validate_compression_artifacts(
         simulated_video_file (str): Path to the simulated video file.
         threshold (int): PSNR threshold to consider the video as having compression artifacts.
     Returns:
-        bool: True if the simulated video file has compression artifacts compared to the original video file, False otherwise.
+        bool: True if the simulated video file has compression artifacts
+              compared to the original video file, False otherwise.
     """
     __print_test("Validating Compression Artifacts")
     try:
@@ -140,7 +143,8 @@ def validate_change_brightness(
         simulated_video_file (str): Path to the simulated video file.
         brightness_threshold (int): Threshold for brightness difference to consider the change significant.
     Returns:
-        bool: True if the simulated video file has a different brightness compared to the original video file, False otherwise.
+        bool: True if the simulated video file has a different brightness
+              compared to the original video file, False otherwise.
     """
     __print_test("Validating Change Brightness")
     try:
@@ -193,12 +197,14 @@ def validate_change_brightness(
             < brightness_threshold
         ):
             __print_failure(
-                f"Failed! Brightness change is not significant. Original: {original_avg_brightness}, Simulated: {simulated_avg_brightness}"
+                f"Failed! Brightness change is not significant. Original: {original_avg_brightness},"
+                "Simulated: {simulated_avg_brightness}"
             )
             return False
 
         __print_success(
-            f"Success! Brightness change is significant. Original: {original_avg_brightness}, Simulated: {simulated_avg_brightness}"
+            f"Success! Brightness change is significant. Original: {original_avg_brightness}, "
+            "Simulated: {simulated_avg_brightness}"
         )
         return True
 
@@ -255,12 +261,14 @@ def validate_blur(original_video_file, simulated_video_file):
 
         if abs(simulated_avg_blur - original_avg_blur) < 10:
             __print_failure(
-                f"Failed! Blur change is not significant. Original: {original_avg_blur}, Simulated: {simulated_avg_blur}"
+                f"Failed! Blur change is not significant. Original: {original_avg_blur},"
+                "Simulated: {simulated_avg_blur}"
             )
             return False
 
         __print_success(
-            f"Success! Blur change is significant. Original: {original_avg_blur}, Simulated: {simulated_avg_blur}"
+            f"Success! Blur change is significant. Original: {original_avg_blur}, "
+            "Simulated: {simulated_avg_blur}"
         )
         return True
     except Exception as e:
@@ -277,7 +285,8 @@ def validate_contrast(original_video_file, simulated_video_file):
         original_video_file (str): Path to the original video file.
         simulated_video_file (str): Path to the simulated video file.
     Returns:
-        bool: True if the simulated video file has a different contrast compared to the original video file, False otherwise.
+        bool: True if the simulated video file has a different contrast
+              compared to the original video file, False otherwise.
     """
     __print_test("Validating Change Contrast")
     try:
@@ -325,12 +334,14 @@ def validate_contrast(original_video_file, simulated_video_file):
 
         if abs(simulated_avg_contrast - original_avg_contrast) < 5:
             __print_failure(
-                f"Failed! Contrast change is not significant. Original: {original_avg_contrast}, Simulated: {simulated_avg_contrast}"
+                f"Failed! Contrast change is not significant. Original: {original_avg_contrast},"
+                "Simulated: {simulated_avg_contrast}"
             )
             return False
 
         __print_success(
-            f"Success! Contrast change is significant. Original: {original_avg_contrast}, Simulated: {simulated_avg_contrast}"
+            f"Success! Contrast change is significant. Original: {original_avg_contrast},"
+            "Simulated: {simulated_avg_contrast}"
         )
         return True
 
@@ -346,7 +357,8 @@ def validate_background_noise(original_video_file, simulated_video_file):
         original_video_file (str): Path to the original video file.
         simulated_video_file (str): Path to the simulated video file.
     Returns:
-        bool: True if the simulated video file has background noise compared to the original video file, False otherwise.
+        bool: True if the simulated video file has background noise compared to the original video file,
+              False otherwise.
     """
     __print_test("Validating Background Noise")
     try:
@@ -390,12 +402,14 @@ def validate_background_noise(original_video_file, simulated_video_file):
 
         if abs(simulated_avg_noise - original_avg_noise) < 10:
             __print_failure(
-                f"Failed! Noise change is not significant. Original: {original_avg_noise}, Simulated: {simulated_avg_noise}"
+                f"Failed! Noise change is not significant. Original: {original_avg_noise},"
+                "Simulated: {simulated_avg_noise}"
             )
             return False
 
         __print_success(
-            f"Success! Noise change is significant. Original: {original_avg_noise}, Simulated: {simulated_avg_noise}"
+            f"Success! Noise change is significant. Original: {original_avg_noise}, "
+            "Simulated: {simulated_avg_noise}"
         )
         return True
 
@@ -411,7 +425,8 @@ def validate_horizontal_drift(original_video_file, simulated_video_file):
         original_video_file (str): Path to the original video file.
         simulated_video_file (str): Path to the simulated video file.
     Returns:
-        bool: True if the simulated video file has horizontal drift compared to the original video file, False otherwise.
+        bool: True if the simulated video file has horizontal drift compared to the original video file,
+              False otherwise.
     """
     __print_test("Validating Horizontal Drift")
     try:
@@ -453,12 +468,14 @@ def validate_horizontal_drift(original_video_file, simulated_video_file):
 
         if abs(simulated_avg_x - original_avg_x) < 5:
             __print_failure(
-                f"Failed! Horizontal drift change is not significant. Original: {original_avg_x}, Simulated: {simulated_avg_x}"
+                f"Failed! Horizontal drift change is not significant. Original: {original_avg_x}, "
+                "Simulated: {simulated_avg_x}"
             )
             return False
 
         __print_success(
-            f"Success! Horizontal drift change is significant. Original: {original_avg_x}, Simulated: {simulated_avg_x}"
+            f"Success! Horizontal drift change is significant. Original: {original_avg_x}, "
+            "Simulated: {simulated_avg_x}"
         )
         return True
 
