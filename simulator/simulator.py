@@ -91,7 +91,6 @@ def run_simulation(videos, simulation_type, video_folder_path):
         print("Server stopped successfully.")
         remove_network_simulation()
         delete_temp_videos(video_folder_path)
-        open("simulator.log", "w").close()
         sys.exit(0)
 
     # Handle SIGINT for stopping the server
