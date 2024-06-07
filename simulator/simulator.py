@@ -144,11 +144,7 @@ def delete_temp_videos(video_folder_path):
 if __name__ == "__main__":
     # Get the available simulation types from the simulation module
     simulation_types = sorted(
-        [
-            func
-            for func in dir(simulations)
-            if callable(getattr(simulations, func)) and not func.startswith("__")
-        ],
+        [func for func in dir(simulations) if callable(getattr(simulations, func)) and not func.startswith("__")],
         key=lambda x: getattr(simulations, x).__code__.co_firstlineno,
     )
 
@@ -173,9 +169,7 @@ if __name__ == "__main__":
 
         # Check if the video folder contains any video files
         if not videos:
-            print(
-                f"The video folder '{video_folder}' does not contain any video files."
-            )
+            print(f"The video folder '{video_folder}' does not contain any video files.")
             sys.exit(1)
 
         # Check if the video files are accessible

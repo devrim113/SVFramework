@@ -44,14 +44,10 @@ def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.
             log_content_sim = sim.readlines()
 
         relevant_entries_orig = [
-            line.strip()
-            for line in log_content_orig
-            if "score" in line or "time" in line or "period" in line
+            line.strip() for line in log_content_orig if "score" in line or "time" in line or "period" in line
         ]
         relevant_entries_sim = [
-            line.strip()
-            for line in log_content_sim
-            if "score" in line or "time" in line or "period" in line
+            line.strip() for line in log_content_sim if "score" in line or "time" in line or "period" in line
         ]
 
         total_entries = max(len(relevant_entries_orig), len(relevant_entries_sim))
@@ -59,11 +55,7 @@ def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.
             __print_failure("No relevant entries found in either log file.")
             return False
 
-        differences = sum(
-            1
-            for entry1, entry2 in zip(relevant_entries_orig, relevant_entries_sim)
-            if entry1 != entry2
-        )
+        differences = sum(1 for entry1, entry2 in zip(relevant_entries_orig, relevant_entries_sim) if entry1 != entry2)
         similarity = (total_entries - differences) / total_entries
 
         if similarity >= similarity_threshold:
@@ -145,9 +137,7 @@ def validate_overlay_similarity(
 
             # Perform template matching
             if mask is not None:
-                res = cv2.matchTemplate(
-                    gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED, mask=mask
-                )
+                res = cv2.matchTemplate(gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED, mask=mask)
             else:
                 res = cv2.matchTemplate(gray_frame, overlay_gray, cv2.TM_CCOEFF_NORMED)
 
@@ -168,9 +158,7 @@ def validate_overlay_similarity(
             __print_success("Success! Overlay image is present in the simulated video.")
             return True
         else:
-            __print_failure(
-                "Failed! Overlay image is not present in the simulated video."
-            )
+            __print_failure("Failed! Overlay image is not present in the simulated video.")
             return False
 
     except Exception as e:
@@ -254,16 +242,12 @@ def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
             try:
                 tree = ET.parse(output_xml)
                 root = tree.getroot()
-                vmaf_score = float(
-                    root.find(".//pooled_metrics/metric[@name='vmaf']").get("mean")
-                )
+                vmaf_score = float(root.find(".//pooled_metrics/metric[@name='vmaf']").get("mean"))
                 if vmaf_score >= min_vmaf_score:
                     __print_success(f"Success! VMAF score: {vmaf_score}")
                     return True
                 else:
-                    __print_failure(
-                        f"Failed! VMAF score: {vmaf_score} is below the minimum {min_vmaf_score}"
-                    )
+                    __print_failure(f"Failed! VMAF score: {vmaf_score} is below the minimum {min_vmaf_score}")
                     return False
             except Exception as e:
                 __print_failure(f"Failed to parse VMAF score: {e}")
@@ -418,14 +402,10 @@ def validate_minimum_resolution(simulated_video, min_width=1280, min_height=720)
 
         height, width = frame.shape[:2]
         if width < min_width or height < min_height:
-            __print_failure(
-                f"Failed! Resolution check: {width}x{height} is below minimum {min_width}x{min_height}"
-            )
+            __print_failure(f"Failed! Resolution check: {width}x{height} is below minimum {min_width}x{min_height}")
             return False
 
-        __print_success(
-            f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}."
-        )
+        __print_success(f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}.")
         return True
     except Exception as e:
         __print_failure(f"Error during resolution validation: {e}")
@@ -471,9 +451,7 @@ def validate_bitrate(simulated_video, min_bitrate_kbps=500):
             __print_success(f"Success! Bitrate is {bitrate_kbps} kbps.")
             return True
         else:
-            __print_failure(
-                f"Failed! Bitrate is {bitrate_kbps} kbps, below the minimum {min_bitrate_kbps} kbps"
-            )
+            __print_failure(f"Failed! Bitrate is {bitrate_kbps} kbps, below the minimum {min_bitrate_kbps} kbps")
             return False
 
     except Exception as e:
@@ -523,9 +501,7 @@ def validate_keyframe_interval(simulated_video, max_interval=250):
         )
 
         if max_keyframe_interval <= max_interval:
-            __print_success(
-                f"Success! Max keyframe interval is {max_keyframe_interval} frames."
-            )
+            __print_success(f"Success! Max keyframe interval is {max_keyframe_interval} frames.")
             return True
         else:
             __print_failure(
@@ -538,9 +514,7 @@ def validate_keyframe_interval(simulated_video, max_interval=250):
         return False
 
 
-def validate_audio_quality(
-    simulated_video, min_bitrate_kbps=64, min_sample_rate_hz=44100
-):
+def validate_audio_quality(simulated_video, min_bitrate_kbps=64, min_sample_rate_hz=44100):
     """
     Validate the audio quality by checking the bitrate and sample rate.
     Args:
@@ -550,9 +524,7 @@ def validate_audio_quality(
     Returns:
         bool: True if the audio quality meets the required standards, False otherwise.
     """
-    __print_test(
-        f"Validating audio quality (>= {min_bitrate_kbps} kbps, >= {min_sample_rate_hz} Hz)"
-    )
+    __print_test(f"Validating audio quality (>= {min_bitrate_kbps} kbps, >= {min_sample_rate_hz} Hz)")
     try:
         # Check if the video has an audio stream
         audio_check_result = subprocess.run(
@@ -605,9 +577,7 @@ def validate_audio_quality(
         sample_rate_hz = int(lines[1])
 
         if bitrate_kbps >= min_bitrate_kbps and sample_rate_hz >= min_sample_rate_hz:
-            __print_success(
-                f"Success! Audio bitrate is {bitrate_kbps} kbps and sample rate is {sample_rate_hz} Hz"
-            )
+            __print_success(f"Success! Audio bitrate is {bitrate_kbps} kbps and sample rate is {sample_rate_hz} Hz")
             return True
         else:
             __print_failure(
@@ -660,9 +630,7 @@ def validate_video_codec(simulated_video, required_codec="h264"):
             __print_success(f"Success! Video codec is {codec}.")
             return True
         else:
-            __print_failure(
-                f"Failed! Video codec is {codec}, expected {required_codec}."
-            )
+            __print_failure(f"Failed! Video codec is {codec}, expected {required_codec}.")
             return False
 
     except Exception as e:
@@ -693,11 +661,7 @@ def validate_error_similarity(original_log, simulated_log, similarity_threshold=
             __print_success("No error entries found in either log file.")
             return True
 
-        differences = sum(
-            1
-            for entry1, entry2 in zip(original_lines, simulated_lines)
-            if entry1 != entry2
-        )
+        differences = sum(1 for entry1, entry2 in zip(original_lines, simulated_lines) if entry1 != entry2)
         similarity = (total_entries - differences) / total_entries
 
         if similarity >= similarity_threshold:

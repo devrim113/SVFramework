@@ -72,9 +72,7 @@ def validate_low_resolution(original_video_file, simulated_video_file):
         return False
 
 
-def validate_compression_artifacts(
-    original_video_file, simulated_video_file, threshold=30
-):
+def validate_compression_artifacts(original_video_file, simulated_video_file, threshold=30):
     """
     Checks if the simulator produces a video with compression artifacts.
     Args:
@@ -101,9 +99,7 @@ def validate_compression_artifacts(
             "-",
         ]
 
-        result = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-        )
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         psnr_output = result.stderr
 
         # Extract PSNR value from the output
@@ -118,14 +114,10 @@ def validate_compression_artifacts(
             return False
 
         if psnr_value < threshold:
-            __print_success(
-                f"Success! PSNR value: {psnr_value} indicates compression artifacts."
-            )
+            __print_success(f"Success! PSNR value: {psnr_value} indicates compression artifacts.")
             return True
         else:
-            __print_failure(
-                f"Failed! PSNR value: {psnr_value} indicates insufficient compression artifacts."
-            )
+            __print_failure(f"Failed! PSNR value: {psnr_value} indicates insufficient compression artifacts.")
             return False
 
     except Exception as e:
@@ -133,9 +125,7 @@ def validate_compression_artifacts(
         return False
 
 
-def validate_change_brightness(
-    original_video_file, simulated_video_file, brightness_threshold=10
-):
+def validate_change_brightness(original_video_file, simulated_video_file, brightness_threshold=10):
     """
     Checks if the simulator produces a video with altered brightness.
     Args:
@@ -168,12 +158,8 @@ def validate_change_brightness(
             original_ret, original_frame = original_cap.read()
             if not original_ret:
                 break
-            original_brightness_list.append(
-                cv2.cvtColor(original_frame, cv2.COLOR_BGR2GRAY).mean()
-            )
-            if (
-                len(original_brightness_list) >= 30
-            ):  # Arbitrary number of frames to check
+            original_brightness_list.append(cv2.cvtColor(original_frame, cv2.COLOR_BGR2GRAY).mean())
+            if len(original_brightness_list) >= 30:  # Arbitrary number of frames to check
                 break
 
         # Calculate average brightness for a few frames of the simulated video
@@ -181,21 +167,14 @@ def validate_change_brightness(
             simulated_ret, simulated_frame = simulated_cap.read()
             if not simulated_ret:
                 break
-            simulated_brightness_list.append(
-                cv2.cvtColor(simulated_frame, cv2.COLOR_BGR2GRAY).mean()
-            )
-            if (
-                len(simulated_brightness_list) >= 30
-            ):  # Arbitrary number of frames to check
+            simulated_brightness_list.append(cv2.cvtColor(simulated_frame, cv2.COLOR_BGR2GRAY).mean())
+            if len(simulated_brightness_list) >= 30:  # Arbitrary number of frames to check
                 break
 
         original_avg_brightness = np.mean(original_brightness_list)
         simulated_avg_brightness = np.mean(simulated_brightness_list)
 
-        if (
-            abs(simulated_avg_brightness - original_avg_brightness)
-            < brightness_threshold
-        ):
+        if abs(simulated_avg_brightness - original_avg_brightness) < brightness_threshold:
             __print_failure(
                 f"Failed! Brightness change is not significant. Original: {original_avg_brightness},"
                 "Simulated: {simulated_avg_brightness}"
@@ -267,8 +246,7 @@ def validate_blur(original_video_file, simulated_video_file):
             return False
 
         __print_success(
-            f"Success! Blur change is significant. Original: {original_avg_blur}, "
-            "Simulated: {simulated_avg_blur}"
+            f"Success! Blur change is significant. Original: {original_avg_blur}, " "Simulated: {simulated_avg_blur}"
         )
         return True
     except Exception as e:
@@ -310,9 +288,7 @@ def validate_contrast(original_video_file, simulated_video_file):
             original_ret, original_frame = original_cap.read()
             if not original_ret:
                 break
-            original_contrast_list.append(
-                cv2.cvtColor(original_frame, cv2.COLOR_BGR2GRAY).std()
-            )
+            original_contrast_list.append(cv2.cvtColor(original_frame, cv2.COLOR_BGR2GRAY).std())
             if len(original_contrast_list) >= 30:  # Arbitrary number of frames to check
                 break
 
@@ -321,12 +297,8 @@ def validate_contrast(original_video_file, simulated_video_file):
             simulated_ret, simulated_frame = simulated_cap.read()
             if not simulated_ret:
                 break
-            simulated_contrast_list.append(
-                cv2.cvtColor(simulated_frame, cv2.COLOR_BGR2GRAY).std()
-            )
-            if (
-                len(simulated_contrast_list) >= 30
-            ):  # Arbitrary number of frames to check
+            simulated_contrast_list.append(cv2.cvtColor(simulated_frame, cv2.COLOR_BGR2GRAY).std())
+            if len(simulated_contrast_list) >= 30:  # Arbitrary number of frames to check
                 break
 
         original_avg_contrast = np.mean(original_contrast_list)
@@ -391,9 +363,7 @@ def validate_background_noise(original_video_file, simulated_video_file):
             simulated_ret, simulated_frame = simulated_cap.read()
             if not simulated_ret:
                 break
-            simulated_noise_list.append(
-                cv2.Laplacian(simulated_frame, cv2.CV_64F).var()
-            )
+            simulated_noise_list.append(cv2.Laplacian(simulated_frame, cv2.CV_64F).var())
             if len(simulated_noise_list) >= 30:  # Arbitrary number of frames to check
                 break
 
@@ -408,8 +378,7 @@ def validate_background_noise(original_video_file, simulated_video_file):
             return False
 
         __print_success(
-            f"Success! Noise change is significant. Original: {original_avg_noise}, "
-            "Simulated: {simulated_avg_noise}"
+            f"Success! Noise change is significant. Original: {original_avg_noise}, " "Simulated: {simulated_avg_noise}"
         )
         return True
 
@@ -554,9 +523,7 @@ def validate_duration_same(original_video_file, simulated_video_file):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print(
-            "Usage: python check_simulation.py <original_video_file> <simulated_video_file>"
-        )
+        print("Usage: python check_simulation.py <original_video_file> <simulated_video_file>")
         sys.exit(1)
 
     original_video_file = sys.argv[1]
@@ -590,9 +557,7 @@ if __name__ == "__main__":
             failed_tests.append("Low Resolution")
     elif simulation_name == "compression_artifacts":
         print("Found compression artifacts simulation. Validating...")
-        if not validate_compression_artifacts(
-            original_video_file, simulated_video_file
-        ):
+        if not validate_compression_artifacts(original_video_file, simulated_video_file):
             error_count += 1
             failed_tests.append("Compression Artifacts")
     elif simulation_name == "brightness" or simulation_name == "dynamic_brightness":
@@ -631,7 +596,5 @@ if __name__ == "__main__":
     if error_count == 0:
         __print_success("Success! All tests passed!")
     else:
-        __print_failure(
-            f"Failed! {error_count} tests failed: {', '.join(failed_tests)}"
-        )
+        __print_failure(f"Failed! {error_count} tests failed: {', '.join(failed_tests)}")
         sys.exit(1)

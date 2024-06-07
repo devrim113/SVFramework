@@ -40,6 +40,4 @@ if __name__ == "__main__":
         failed_tests.append("check_qdisc")
 
     if error_count > 0:
-        __print_failure(
-            f"Failed! {error_count} tests failed: {', '.join(failed_tests)}"
-        )
+        __print_failure(f"Failed! {error_count} tests failed: {', '.join(failed_tests)}")

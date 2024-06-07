@@ -43,15 +43,9 @@ def has_audio_stream(video_file):
         return False
 
 
-def validate_video_files_and_logs(
-    original_video, simulated_video, video_logs, ocr_logs, original_overlay, vmaf_option
-):
+def validate_video_files_and_logs(original_video, simulated_video, video_logs, ocr_logs, original_overlay, vmaf_option):
     validation_types = sorted(
-        [
-            func
-            for func in dir(validations)
-            if callable(getattr(validations, func)) and not func.startswith("__")
-        ],
+        [func for func in dir(validations) if callable(getattr(validations, func)) and not func.startswith("__")],
         key=lambda x: getattr(validations, x).__code__.co_firstlineno,
     )
 
@@ -84,9 +78,7 @@ def validate_video_files_and_logs(
                 if simulated_video_has_audio:
                     result = getattr(validations, func)(simulated_video)
                 else:
-                    print(
-                        f"\033[33mSkipping {func} - no audio stream found in the simulated video.\033[0m"
-                    )
+                    print(f"\033[33mSkipping {func} - no audio stream found in the simulated video.\033[0m")
                     continue
             elif func == "validate_overlay_similarity":
                 result = getattr(validations, func)(original_overlay, simulated_video)
@@ -103,19 +95,13 @@ def validate_video_files_and_logs(
     if error_count == 0:
         print("\033[32mSuccess! All validations passed.\033[0m")
     else:
-        print(
-            f"\033[31mErrors found: {error_count}. Failed validations: {', '.join(failed_validations)}\033[0m"
-        )
+        print(f"\033[31mErrors found: {error_count}. Failed validations: {', '.join(failed_validations)}\033[0m")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
-        print(
-            "Please provide the video folder, video logs folder, OCR logs folder, and the VMAF option as arguments."
-        )
-        print(
-            "Usage: python validator.py <video_folder> <video_logs> <ocr_logs> <overlay_image> <vmaf_option (0, 1)>"
-        )
+        print("Please provide the video folder, video logs folder, OCR logs folder, and the VMAF option as arguments.")
+        print("Usage: python validator.py <video_folder> <video_logs> <ocr_logs> <overlay_image> <vmaf_option (0, 1)>")
         sys.exit(1)
 
     video_folder = sys.argv[1]
@@ -126,9 +112,7 @@ if __name__ == "__main__":
 
     # Get the paths of the two videos in the video folder
     video_files = [
-        os.path.join(video_folder, f)
-        for f in os.listdir(video_folder)
-        if f.endswith((".mp4", ".mkv", ".avi"))
+        os.path.join(video_folder, f) for f in os.listdir(video_folder) if f.endswith((".mp4", ".mkv", ".avi"))
     ]
     if len(video_files) != 2:
         print("The video folder must contain exactly two video files.")

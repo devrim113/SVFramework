@@ -350,11 +350,7 @@ def low_resolution(video_file, scale_factor=0.2):
     Returns:
         str: The GStreamer launch string for the low resolution simulation.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_low_resolution."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_low_resolution." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -377,11 +373,7 @@ def compression_artifacts(video_file, quality=50):
     Returns:
         str: The GStreamer launch string for the compression artifacts simulation.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_compression_artifacts."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_compression_artifacts." + video_file.rsplit(".", 1)[1]
     command = ["ffmpeg", "-i", video_file, "-crf", str(quality), output_video]
     subprocess.run(command, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     print(f"Created video file with compression artifacts: {output_video}")
@@ -398,11 +390,7 @@ def change_brightness(video_file, brightness_factor=0.5):
     Returns:
         str: The GStreamer launch string for the brightness adjustment simulation.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_brightness."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_brightness." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -424,11 +412,7 @@ def dynamic_change_brightness(video_file, brightness_factor=0.8, period=20):
     Returns:
         str: The GStreamer launch string for the dynamic brightness adjustment simulation.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_dynamic_brightness."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_dynamic_brightness." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -451,11 +435,7 @@ def complex_blur(video_file, blur_factor=1.0):
     Returns:
         str: The path to the motion blurred video.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_complex_blur."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_complex_blur." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -478,11 +458,7 @@ def simple_blur(video_file, blur_intensity=1):
     Returns:
         str: The path to the motion blurred video.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_simple_blur."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_simple_blur." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -505,9 +481,7 @@ def change_contrast(video_file, contrast_factor=2.0):
     Returns:
         str: The path to the contrast-adjusted video.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0] + "_temp_contrast." + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_contrast." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -531,11 +505,7 @@ def dynamic_change_contrast(video_file, contrast_factor=900.0, period=20):
     Returns:
         str: The path to the contrast-adjusted video.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_dynamic_contrast."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_dynamic_contrast." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -558,9 +528,7 @@ def background_noise(video_file, noise_intensity=50):
     Returns:
         str: The path to the noise-added video.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0] + "_temp_noise." + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_noise." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
@@ -584,11 +552,7 @@ def horizontal_drift(video_file, duration_effect=20):
     Returns:
         str: The path to the video with the horizontal drift effect.
     """
-    output_video = (
-        video_file.rsplit(".", 1)[0]
-        + "_temp_horizontal_drift."
-        + video_file.rsplit(".", 1)[1]
-    )
+    output_video = video_file.rsplit(".", 1)[0] + "_temp_horizontal_drift." + video_file.rsplit(".", 1)[1]
     command = [
         "ffmpeg",
         "-i",
