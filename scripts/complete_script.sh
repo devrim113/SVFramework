@@ -1,5 +1,8 @@
 #!/bin/sh
 
+
+#TODO: The user has to provide the path to the original video, the video logs, the ocr logs, and the overlay image.
+
 # -------- User Input Section ----------
 # Check if the user has provided the path to the videos folder
 if [ -z "$1" ]; then
