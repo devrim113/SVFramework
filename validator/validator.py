@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     # Get the paths of the two videos in the video folder
     video_files = [
-        os.path.join(video_folder, f) for f in os.listdir(video_folder) if f.endswith((".mp4", ".mkv", ".avi"))
+        os.path.join(video_folder, f) for f in os.listdir(video_folder) if f.endswith((".mp4", ".mkv", ".avi", ".ts"))
     ]
     if len(video_files) != 2:
         print("The video folder must contain exactly two video files.")

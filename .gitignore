@@ -168,3 +168,4 @@ ocr_logs/
 video_logs/
 video_folder/
 overlay_image.*
+simulator_benchmark/
