@@ -9,13 +9,12 @@ simulation_types=(
 
 # Array of video folders (under simulator_benchmark)
 video_folders=(
-    "video_10s_mp4" "video_1m_mp4" "video_10m_mp4" "video_30m_mp4" "video_2h_mp4"
-    "video_10s_ts" "video_1m_ts" "video_10m_ts" "video_30m_ts" "video_2h_ts"
+    "video_10s_mp4" "video_10s_ts" "video_1m_ts" "video_1m_mp4" "video_10m_ts" "video_10m_mp4" "videos_30m_ts" "video_30m_mp4" "video_2h_ts" "video_2h_mp4"
 )
 
 # Base directory for video folders and logs
 base_dir="simulator_benchmark"
-log_dir="$base_dir/logs"
+log_dir="$base_dir/logs_new"
 
 # Ensure the log directory exists
 mkdir -p $log_dir
@@ -39,7 +38,7 @@ run_simulation() {
     total_time=0
     total_speedup=0
 
-    for iteration in {1..5}; do
+    for iteration in {1..1}; do
         echo "Iteration $iteration for $sim_type" | tee -a $log_file
 
         # Remove the test_pipe if it exists and create a new one
@@ -82,12 +81,12 @@ run_simulation() {
         # Clean up
         kill -INT $SIMULATOR_PID
         rm -f /tmp/test_pipe
-        sleep 2
+        sleep 1
     done
 
     # Calculate the average time and speedup
-    average_time=$(echo "scale=3; $total_time / 5" | bc)
-    average_speedup=$(echo "scale=3; $total_speedup / 5" | bc)
+    average_time=$(echo "scale=3; $total_time / 1" | bc)
+    average_speedup=$(echo "scale=3; $total_speedup / 1" | bc)
 
     # Print the results
     echo "Simulation type: $sim_type" | tee -a $log_file

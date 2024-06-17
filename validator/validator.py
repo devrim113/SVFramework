@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     # Calculate and print the total duration
     total_duration = time.time() - start_time
-    print(f"Total test duration: {total_duration:.2f} seconds.")
+    print(f"Total test duration: {total_duration} seconds.")
 
     # Delete all .y4m, .yuv, and .xml files in the current directory
     for file in os.listdir():

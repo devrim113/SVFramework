@@ -64,7 +64,8 @@ def validate_ocr_similarity(original_log, simulated_log, similarity_threshold=0.
         if similarity >= similarity_threshold:
             total_time = time.time() - start_time
             __print_success(
-                f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%. Time taken: {total_time} seconds."
+                f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%."
+                f"Time taken: {total_time} seconds."
             )
             return True
         else:
@@ -162,11 +163,15 @@ def validate_overlay_similarity(
 
         if found:
             total_time = time.time() - start_time
-            __print_success(f"Success! Overlay image is present in the simulated video. Time taken: {total_time} seconds.")
+            __print_success(
+                f"Success! Overlay image is present in the simulated video. Time taken: {total_time} seconds."
+            )
             return True
         else:
             total_time = time.time() - start_time
-            __print_failure("Failed! Overlay image is not present in the simulated video. Time taken: {total_time} seconds.")
+            __print_failure(
+                f"Failed! Overlay image is not present in the simulated video. Time taken: {total_time} seconds."
+            )
             return False
 
     except Exception as e:
@@ -258,7 +263,10 @@ def validate_vmaf(original_video, simulated_video, min_vmaf_score=75):
                     return True
                 else:
                     total_time = time.time() - start_time
-                    __print_failure(f"Failed! VMAF score: {vmaf_score} is below the minimum {min_vmaf_score}. Time taken: {total_time} seconds.")
+                    __print_failure(
+                        f"Failed! VMAF score: {vmaf_score} is below the minimum {min_vmaf_score}."
+                        f"Time taken: {total_time} seconds."
+                    )
                     return False
             except Exception as e:
                 __print_failure(f"Failed to parse VMAF score: {e}")
@@ -424,11 +432,17 @@ def validate_minimum_resolution(simulated_video, min_width=1280, min_height=720)
         height, width = frame.shape[:2]
         if width < min_width or height < min_height:
             total_time = time.time() - start_time
-            __print_failure(f"Failed! Resolution check: {width}x{height} is below minimum {min_width}x{min_height}. Time taken: {total_time} seconds.")
+            __print_failure(
+                f"Failed! Resolution check: {width}x{height} is below minimum {min_width}x{min_height}. "
+                f"Time taken: {total_time} seconds."
+            )
             return False
 
         total_time = time.time() - start_time
-        __print_success(f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}. Time taken: {total_time} seconds.")
+        __print_success(
+            f"Success! Measured resolution: {width}x{height} >= {min_width}x{min_height}. "
+            f"Time taken: {total_time} seconds."
+        )
         return True
     except Exception as e:
         __print_failure(f"Error during resolution validation: {e}")
@@ -477,7 +491,10 @@ def validate_bitrate(simulated_video, min_bitrate_kbps=500):
             return True
         else:
             total_time = time.time() - start_time
-            __print_failure(f"Failed! Bitrate is {bitrate_kbps} kbps, below the minimum {min_bitrate_kbps} kbps. Time taken: {total_time} seconds.")
+            __print_failure(
+                f"Failed! Bitrate is {bitrate_kbps} kbps, below the minimum {min_bitrate_kbps} kbps. "
+                f"Time taken: {total_time} seconds."
+            )
             return False
 
     except Exception as e:
@@ -529,12 +546,16 @@ def validate_keyframe_interval(simulated_video, max_interval=250):
 
         if max_keyframe_interval <= max_interval:
             total_time = time.time() - start_time
-            __print_success(f"Success! Max keyframe interval is {max_keyframe_interval} frames. Time taken: {total_time} seconds.")
+            __print_success(
+                f"Success! Max keyframe interval is {max_keyframe_interval} frames. "
+                f"Time taken: {total_time} seconds."
+            )
             return True
         else:
             total_time = time.time() - start_time
             __print_failure(
-                f"Failed! Max keyframe interval is {max_keyframe_interval} frames, exceeds {max_interval} frames. Time taken: {total_time} seconds."
+                f"Failed! Max keyframe interval is {max_keyframe_interval} frames, exceeds {max_interval} frames. "
+                f"Time taken: {total_time} seconds."
             )
             return False
 
@@ -608,7 +629,10 @@ def validate_audio_quality(simulated_video, min_bitrate_kbps=64, min_sample_rate
 
         if bitrate_kbps >= min_bitrate_kbps and sample_rate_hz >= min_sample_rate_hz:
             total_time = time.time() - start_time
-            __print_success(f"Success! Audio bitrate is {bitrate_kbps} kbps and sample rate is {sample_rate_hz} Hz. Time taken: {total_time} seconds.")
+            __print_success(
+                f"Success! Audio bitrate is {bitrate_kbps} kbps and sample rate is {sample_rate_hz} Hz. "
+                f"Time taken: {total_time} seconds."
+            )
             return True
         else:
             total_time = time.time() - start_time
@@ -665,7 +689,9 @@ def validate_video_codec(simulated_video, required_codec="h264"):
             return True
         else:
             total_time = time.time() - start_time
-            __print_failure(f"Failed! Video codec is {codec}, expected {required_codec}. Time taken: {total_time} seconds.")
+            __print_failure(
+                f"Failed! Video codec is {codec}, expected {required_codec}. Time taken: {total_time} seconds."
+            )
             return False
 
     except Exception as e:
@@ -703,7 +729,8 @@ def validate_error_similarity(original_log, simulated_log, similarity_threshold=
         if similarity >= similarity_threshold:
             total_time = time.time() - start_time
             __print_success(
-                f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%. Time taken: {total_time} seconds."
+                f"Success! Measured similarity: {similarity * 100:.2f}% >= {similarity_threshold * 100:.2f}%. "
+                f"Time taken: {total_time} seconds."
             )
             return True
         else:
