@@ -1,8 +1,8 @@
-# Validation Framework
+# Simualtion and Validation Framework
 
 ## Overview
 
-The Validation Framework is a comprehensive tool designed to validate and simulate various scenarios for robust testing. This project contains scripts, simulators, and validators necessary for creating a consistent validation workflow.
+The Simulation and Validation Framework is a comprehensive tool designed to validate and simulate videos recorded through RTSP streams and IP camera's for robust testing. This project contains scripts, simulators, and validators necessary for creating a consistent validation workflow.
 
 ## Project Structure
 
